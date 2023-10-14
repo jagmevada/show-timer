@@ -83,6 +83,11 @@ void isr_btn_k() {
     BMS_time = 2;
 };
 
+class Remote {
+    Remote() = default;
+    int a;
+};
+
 void setup_display() {
     display.clear();
     digitalWrite(OLED_SW, 0);
