@@ -6,27 +6,27 @@
 
 #include "lcdgfx.h"
 #include "lcdgfx_gui.h"
-//#include "owl.h"
+// #include "owl.h"
 
-#define CHARGEPIN       PIN_PA7 //3
-#define BATTERY_SENSPIN PIN_PA6 //2
-#define BTN_LEFT        PIN_PA5 //1  // S4
-#define BTN_RIGHT       PIN_PC3 //13  // S5
-#define BTN_UP          PIN_PC0 //10  // S1
-#define BTN_OK          PIN_PC1 //11  // S2
-#define BTN_DOWN        PIN_PC2 //12  // S3
-#define BTN_K           PIN_PB5  // for battery only
-#define EXTRA_PIN       PIN_PB4
-#define HC_SW           PIN_PA3
-#define HC_SET          PIN_PA4
-#define OLED_SW         PIN_PB3
+#define CHARGEPIN PIN_PA7        // 3
+#define BATTERY_SENSPIN PIN_PA6  // 2
+#define BTN_LEFT PIN_PA5         // 1  // S4
+#define BTN_RIGHT PIN_PC3        // 13  // S5
+#define BTN_UP PIN_PC0           // 10  // S1
+#define BTN_OK PIN_PC1           // 11  // S2
+#define BTN_DOWN PIN_PC2         // 12  // S3
+#define BTN_K PIN_PB5            // for battery only
+#define EXTRA_PIN PIN_PB4
+#define HC_SW PIN_PA3
+#define HC_SET PIN_PA4
+#define OLED_SW PIN_PB3
 
-#define ADCTIME         20  //multiply by 100ms
-#define SYNCTIME        10 // multiply by 100ms
-#define BMS_TRIGGER_PERIOD 100 //multiply by 100ms
+#define ADCTIME 20              // multiply by 100ms
+#define SYNCTIME 10             // multiply by 100ms
+#define BMS_TRIGGER_PERIOD 100  // multiply by 100ms
 
 DisplaySSD1306_128x64_I2C display(
-        -1); // or (-1,{busId, addr, scl, sda, frequency}). This line is suitable for most platforms by default
+    -1);  // or (-1,{busId, addr, scl, sda, frequency}). This line is suitable for most platforms by default
 unsigned char resolution = 0;
 
 int mcount = 0;
@@ -70,7 +70,7 @@ void isr_btn_ok() {
 
 void isr_btn_right() { isr_btn_ok(); };
 
-void isr_btn_left() {
+void isr_btn_left(){
 
 };
 
@@ -81,9 +81,7 @@ void isr_btn_down() {
 
 void isr_btn_k() {
     BMS_time = 2;
-
 };
-
 
 void setup_display() {
     display.clear();
@@ -99,7 +97,6 @@ void setup_display() {
     display.setFixedFont(ssd1306xled_font6x8);
     lcd_delay(100);
 };
-
 
 void setup_io() {
     pinMode(OLED_SW, OUTPUT);
@@ -126,32 +123,31 @@ void setup_io() {
     attachInterrupt(BTN_LEFT, isr_btn_left, FALLING);
     attachInterrupt(BTN_RIGHT, isr_btn_right, FALLING);
     attachInterrupt(BTN_K, isr_btn_k, FALLING);
-
 };
 
 void setup_adc() {
     pinMode(BATTERY_SENSPIN, INPUT);
     analogReadResolution(12);
-    analogReference(0x6);//VDD);//INTERNAL2V048);VDDINTERNAL2V048
+    analogReference(0x6);  // VDD);//INTERNAL2V048);VDDINTERNAL2V048
 };
 
 void setup_timer_b0() {
     TCB0.CCMP = 40000;  // CCMP/4MHz.
     TCB0.CTRLA = TCB_CLKSEL_CLKDIV2_gc | TCB_ENABLE_bm | TCB_RUNSTDBY_bm;
-    TCB0.INTFLAGS = TCB_CAPT_bm;    // Clear any pending interrupt flags
-    TCB0.INTCTRL = TCB_CAPT_bm;    // Enable TCB0 timeout interrupt
+    TCB0.INTFLAGS = TCB_CAPT_bm;  // Clear any pending interrupt flags
+    TCB0.INTCTRL = TCB_CAPT_bm;   // Enable TCB0 timeout interrupt
 };
 
 void counting() {
     total = mcount + fcount;
-    sprintf(cm, "%d", mcount); //analogRead(BUTTON));
-    sprintf(cf, "%d", fcount);//fcount);
+    sprintf(cm, "%d", mcount);  // analogRead(BUTTON));
+    sprintf(cf, "%d", fcount);  // fcount);
     sprintf(ct, "%d", total);
 }
 
 void battery_sensing() {  // read Battery voltage
     batterylevel = map(analogRead(BATTERY_SENSPIN), 2400, 3480, 0,
-                       100);//map(analogRead(BATTERY_SENSPIN), 2457, 3440, 0, 100);
+                       100);  // map(analogRead(BATTERY_SENSPIN), 2457, 3440, 0, 100);
     if (batterylevel > 100) {
         batterylevel = 100;
     }
@@ -168,7 +164,7 @@ void battery_charge_state() {
 }
 
 void displaystate() {
-    //display.clear();
+    // display.clear();
     display.printFixedN(0, 1, "J :", STYLE_NORMAL, 1);
     display.printFixedN(48, 1, "         ", STYLE_NORMAL, 1);
     display.printFixedN(48, 1, cm, STYLE_NORMAL, 1);
@@ -202,7 +198,7 @@ void setup() {
     setup_adc();
     setup_display();
     setup_timer_b0();
-    sei(); // Enable global interrupts
+    sei();  // Enable global interrupts
     set_sleep_mode(SLEEP_MODE_STANDBY);
     sleep_mode();
 }
@@ -210,7 +206,7 @@ void setup() {
 void loop() {
     set_sleep_mode(SLEEP_MODE_STANDBY);
     sleep_mode();
-    //fcount++;
+    // fcount++;
     if (countupdate) {
         counting();
         countupdate = 0;
@@ -229,8 +225,7 @@ void loop() {
     }
 }
 
-
-ISR(TCB0_INT_vect) {   /// 10ms timer
+ISR(TCB0_INT_vect) {  /// 10ms timer
     static unsigned int timercount = 0, xx = 0;
 
     switch (timercount) {
@@ -255,7 +250,8 @@ ISR(TCB0_INT_vect) {   /// 10ms timer
                 digitalWrite(BTN_K, 1);
                 pinMode(BTN_K, INPUT);
                 attachInterrupt(BTN_K, isr_btn_k, FALLING);
-            } else;
+            } else
+                ;
             break;
         case 4:
             bat_adctime--;
