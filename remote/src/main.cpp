@@ -33,7 +33,7 @@ char cbat[5];
 uch rxdata;
 uch crxdata[4];
 
-ConfigurableDownCounter counter(1, 03);
+ConfigurableDownCounter counter(1, 02);
 char down_counter_output[10];
 volatile bool is_paused = false;
 volatile uint8_t position_to_update = 0;
