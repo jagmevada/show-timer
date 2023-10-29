@@ -2,6 +2,12 @@
 #include <SPI.h>
 #include <Wire.h>
 // The project fails to build without the above two includes.
+#include <HardwareSerial.h>
+// #define FIRSTTIME
+typedef unsigned char uch;
+HardwareSerial &hc12 = Serial1;
+
+HardwareSerial &mon = Serial;
 
 
 #include "lcdgfx.h"
@@ -16,17 +22,17 @@ String power_cmd = String("AT+P")+String(POWER);
 String baud_cmd = String("AT+B")+String(SLOWBAUD);
 String check_cmd = String("AT");
 String rx_cmd = String("AT+RX");
-#define PIN_TX1 PIN_PA2 // turn off hc12 completely
-#define PIN_RX1 PIN_PA1 // turn off hc12 completely
+// #define PIN_TX1 PIN_PA2 // turn off hc12 completely
+// #define PIN_RX1 PIN_PA1 // turn off hc12 completely
 
-#define PIN_B0 PIN_PC3 //PIN_PA4  //A
+#define PIN_B0 PIN_PA4  //A
 #define PIN_B1 PIN_PA5  //B
 #define PIN_B2 PIN_PA6  //C
 #define PIN_B3 PIN_PA7  //D B3B2B1B0 is BCD code for selected digit
 #define PIN_D0 PIN_PB5  //E
 #define PIN_D1 PIN_PB4  //F  D1D0 Selects digit
 #define PIN_M0 PIN_PA3  //HC-12 module0 supply ON/OFF 1-OFF, 0-ON
-#define PIN_SET0  PIN_PA4 //PIN_PC3 //HC-12 module0 setting mode, 1-Normal mode, 0-setting mode
+#define PIN_SET0 PIN_PC3 //HC-12 module0 setting mode, 1-Normal mode, 0-setting mode
 #define PIN_DISPLAY_POWER PIN_PB1 //ON/OFF  OF MAIN DIPOWERSPLAY 1-OFF, 0-ON
 //#HC-12 module 1 is redundant, not to be used for JJ116
 #define PIN_M1 PIN_PC0  //HC-12 module1 supply ON/OFF 1-OFF, 0-ON
@@ -73,6 +79,7 @@ void hc12_setmode(){
 };
 void hc12_normalmode(){
   digitalWrite(PIN_SET0,1);
+  delay(100);
 };
 
 
@@ -97,63 +104,62 @@ void setup_timer_b0(){
 };
 
 void printme(){
-        if(Serial1.available()){
-        while(Serial1.available()){
-          Serial.write(Serial1.read());}
+        static uch c;
+        if(hc12.available()){
+         while(hc12.available()){
+           mon.write(hc12.read());
+           }
         }
-        else{
-          Serial.println("y");
-        }
-}
+ }
 void hc12_poweron_setup(){
+
   hc12_normalmode();
-  //txrx_off();
-  delay(300);
-  
+  delay(100);
+  #ifdef FIRSTTIME
     hc12_turnoff();
     delay(100);
-    Serial1.begin(9600);
+    hc12.begin(9600);
     hc12_setmode();
     hc12_turnon();
     delay(100);
-    while(Serial1.available())
-    Serial1.read();
-    Serial1.print(check_cmd);
+    while(hc12.available())
+    hc12.read();
+    hc12.print(check_cmd);
     delay(100);
     printme();
-    Serial1.print(channel_cmd);
+    hc12.print(channel_cmd);
     delay(100);
     printme();
-    Serial1.print(power_cmd);
+    hc12.print(power_cmd);
     delay(100);
     printme();
-    Serial1.print(baud_cmd);
+    hc12.print(baud_cmd);
     delay(100);
     printme();    
-    Serial1.print(check_cmd);
+    hc12.print(check_cmd);
     delay(100);
     printme();
-    Serial1.print(rx_cmd);
+    hc12.print(rx_cmd);
     delay(200);
     printme();
     hc12_normalmode();
     delay(400);
-    Serial1.end();
+    hc12.end();
     delay(100);
     hc12_setmode();
-    Serial1.begin(2400);
-    
-    
-    delay(100);
-    while(Serial1.available())
-    Serial1.read();
-       Serial1.print(check_cmd);
-    delay(100);
-    printme();
-       Serial1.print(rx_cmd);
+    #endif
+    hc12.begin(2400);
+     delay(100);
+    while(hc12.available())
+    hc12.read();
+    #ifdef FIRSTTIME
+       hc12.print(check_cmd);
     delay(100);
     printme();
-
+       hc12.print(rx_cmd);
+    delay(100);
+    printme();
+   #endif
     };
 
 void hc12_setup_hot(){
@@ -161,7 +167,7 @@ void hc12_setup_hot(){
     hc12_normalmode();
     hc12_turnon();
     delay(1000);
-    Serial1.begin(9600);
+    hc12.begin(9600);
     hc12_setmode();
 };
 
@@ -171,19 +177,18 @@ void setup() {
   setup_timer_b0();
   hc12r_turnoff();
   //hc12_setup_cold();
-  
-  Serial.begin(9600);
+    mon.begin(9600);
   hc12_poweron_setup();
+   hc12_turnon();
 //  hc12_normalmode();
-  //  sei(); // Enable global interrupts
+    sei(); // Enable global interrupts
   // set_sleep_mode(SLEEP_MODE_STANDBY );  
   // sleep_mode();
- Serial.end();
+ mon.end();
  hc12_normalmode();
  delay(100);
- Serial.begin(2400);
- 
-}
+ mon.begin(2400);
+    }
 
 
 void loop() {
@@ -191,27 +196,39 @@ void loop() {
   // sleep_mode();
 //  if(Serial1.available()){
 //    while(Serial1.available()>0){
-//    Serial.print(Serial1.read());}
+//    mon.print(Serial1.read());}
 //  }
-  delay(10);
-//  if(Serial.available()){
-//    while(Serial.available()>0){
-//    Serial1.write(Serial.read());
+//   delay(10);
+//  if(mon.available()){
+//    while(mon.available()>0){
+//    Serial1.write(mon.read());
 //    }
 //    }
-  
-  if(Serial1.available()){
-    Serial1.write(Serial1.read());
+//   static uch xx=0;
+//   if(Serial1.available()){
+//     Serial1.write(Serial1.read());
+//   }
+//
+static uch x;
+delay(1000);
+if(hc12.available()){
+  while(hc12.available()>0){
+  mon.print(hc12.read());
   }
+}
+// mon.println(x);
+hc12.write(x++);
+delay(100);
+//digitalWrite(LED_BUILTIN, x&1);
+
 //
-//
-//  hc12_turnoff();
+ //hc12_turnoff();
 //hc12_normalmode();
-//    delay(5000);
+   //delay(5000);
 //    hc12_setmode();
-//    hc12_turnon();
+ //  hc12_turnon();
 //  delay(2000);
-  //Serial.print("x");
+  //mon.print("x");
 //   hc12r_turnon();
 //    hc12_turnon();
 //   delay(1000);
