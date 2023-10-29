@@ -1,26 +1,14 @@
+#include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 // The project fails to build without the above two includes.
 
-#include <Arduino.h>
 
+#include "functions.hpp"
 #include "counter.hpp"
 #include "lcdgfx.h"
 #include "lcdgfx_gui.h"
 // #include "owl.h"
-
-#define CHARGEPIN PIN_PA7        // 3
-#define BATTERY_SENSPIN PIN_PA6  // 2
-#define BTN_LEFT PIN_PA5         // 1  // S4
-#define BTN_RIGHT PIN_PC3        // 13  // S5
-#define BTN_UP PIN_PC0           // 10  // S1
-#define BTN_OK PIN_PC1           // 11  // S2
-#define BTN_DOWN PIN_PC2         // 12  // S3
-#define BTN_K PIN_PB5            // for battery only
-#define EXTRA_PIN PIN_PB4
-#define HC_SW PIN_PA3
-#define HC_SET PIN_PA4
-#define OLED_SW PIN_PB3
 
 // Analog to digital converter time?
 #define ADCTIME 20  // multiply by 100ms
@@ -42,8 +30,10 @@ char cm[6];
 char cf[6];
 char ct[6];
 char cbat[5];
+uch rxdata;
+uch crxdata[4];
 
-ConfigurableDownCounter counter(1, 12);
+ConfigurableDownCounter counter(1, 03);
 char down_counter_output[10];
 volatile bool is_paused = false;
 volatile uint8_t position_to_update = 0;
@@ -170,8 +160,11 @@ void setup_io() {
     pinMode(BTN_DOWN, INPUT);
     pinMode(BTN_LEFT, INPUT);
     pinMode(BTN_RIGHT, INPUT);
-    pinMode(HC_SW, OUTPUT);
-    pinMode(HC_SET, OUTPUT);
+
+    pinMode(PIN_M0, OUTPUT);
+    pinMode(PIN_SET0, OUTPUT);
+    digitalWrite(PIN_M0,1);  //1-OFF, 0-ON
+    digitalWrite(PIN_SET0,0); // 1-NOMRAL MODE, 0-SETTING MODE
 
     digitalWrite(EXTRA_PIN, 1);
     digitalWrite(OLED_SW, 1);
@@ -214,7 +207,7 @@ void setup_timer_b0() {
 void counting() {
     total = mcount + fcount;
     sprintf(cm, "%d", mcount);  // analogRead(BUTTON));
-    sprintf(cf, "%d", fcount);  // fcount);
+    sprintf(cf, "%d", fcount);  // fcount);a
     sprintf(ct, "%d", total);
 }
 
@@ -239,6 +232,8 @@ void battery_charge_state() {
 void update_display_state() {
     counter.SetOutputString(down_counter_output);
     display.printFixedN(0, 2, down_counter_output, STYLE_NORMAL, 2);
+    snprintf(crxdata, 4, "%d", rxdata);
+    display.printFixedN(0,34, crxdata, STYLE_NORMAL, 1);
 }
 
 void setup() {
@@ -246,13 +241,16 @@ void setup() {
     setup_adc();
     setup_display();
     setup_timer_b0();
+    hc12_poweron_setup();
+    hc12_normalmode();
+
     sei();  // Enable global interrupts
-    set_sleep_mode(SLEEP_MODE_STANDBY);
+  //  set_sleep_mode(SLEEP_MODE_STANDBY);
 }
 
 void loop() {
     // Enter sleep mode at the start of every iteration.
-    sleep_mode();
+   // sleep_mode();
 
     // The following code is executed everytime an interrupt occures,
     // which causes an exit from the sleep mode.
@@ -341,10 +339,12 @@ ISR(TCB0_INT_vect) {
         case 6: {
             count_time--;
             if (count_time == 0) {
+                static uch xx=0;
                 update_count = true;
                 mcount++;
                 fcount++;
                 count_time = SYNC_TIME;
+                
             }
             break;
         }
@@ -363,6 +363,10 @@ ISR(TCB0_INT_vect) {
                 }
             }
 
+            if(hc12.available()){
+                rxdata=hc12.read();
+                hc12.write(rxdata);
+            }
             break;
         }
         default: {
