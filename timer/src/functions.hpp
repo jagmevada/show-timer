@@ -7,24 +7,30 @@
 #include <EEPROM.h>
 #include <stdio.h>
 
+// #define FIRSTTIME
 
-#define FIRSTTIME
 #define SEC 996
 #define EEPROMADDR 8 
 
-#define PIN_B0 PIN_PA4  //A
+#define PIN_B0 PIN_PB4  //A  //F
 #define PIN_B1 PIN_PA5  //B
 #define PIN_B2 PIN_PA6  //C
 #define PIN_B3 PIN_PA7  //D B3B2B1B0 is BCD code for selected digit
 #define PIN_D0 PIN_PB5  //E
-#define PIN_D1 PIN_PB4  //F  D1D0 Selects digit
+#define PIN_D1 PIN_PA4  //F  A D1D0 Selects digit
+#define PA PIN_B0
+#define PB PIN_B1
+#define PC PIN_B2
+#define PD PIN_B3
+#define PE PIN_D0
+#define PF PIN_D1
+
 #define PIN_M0 PIN_PA3  //HC-12 module0 supply ON/OFF 1-OFF, 0-ON
 #define PIN_SET0 PIN_PC3 //HC-12 module0 setting mode, 1-Normal mode, 0-setting mode
 #define PIN_DISPLAY_POWER PIN_PB1 //ON/OFF  OF MAIN DIPOWERSPLAY 1-OFF, 0-ON
 //#HC-12 module 1 is redundant, not to be used for JJ116
 #define PIN_M1 PIN_PC0  //HC-12 module1 supply ON/OFF 1-OFF, 0-ON
 #define PIN_SET1 PIN_PB0 //HC-12 module1 setting mode, 1-Normal mode, 0-setting mode
-
 
 
 #include "lcdgfx.h"
@@ -50,12 +56,12 @@ typedef unsigned long int ulnt;
 typedef struct{
    unsigned int s0, s1, m0, m1;
 }timestruct;
-timestruct tx,ts,ttest;
+timestruct tx,ts,ti;
 volatile uch stateset = LOW;
 volatile uch statestop= LOW;
 ulnt timesince=0;
 int t0=1200;
-int x=15;
+int x=1200;
 
 HardwareSerial &hc12 = Serial1;
 HardwareSerial &mon = Serial;
@@ -65,14 +71,14 @@ HardwareSerial &mon = Serial;
 
 #define MYADDRESS 0x0A
 
-#define CMD_NONE0   0
+#define CMD_RESTART   0
 #define CMD_RESUME  1
 #define CMD_HOLD    2
 #define CMD_SET     3
 #define CMD_STATUS  4
 #define CMD_NEWDATA 5
-#define CMD_NONE1   6
-#define CMD_NONE2   7
+#define CMD_NONE1   6//
+#define CMD_NONE2   7//
 
 
 
@@ -82,6 +88,11 @@ typedef struct{
     unsigned int address : 4; // 4-bit field for address
     unsigned int command : 3; // 3-bit field for command
 } rxbyte;
+typedef union{
+    uch byte;
+    rxbyte fields;
+}rxdata;
+
 typedef struct{
   unsigned char msb;
   unsigned char lsb;
@@ -91,10 +102,7 @@ typedef union{
   bytepayload fields;
 }payload;
 
-typedef union{
-    uch byte;
-    rxbyte fields;
-}rxdata;
+
 
 uch paritycheck(uch data) {
     data ^= data >> 4;
@@ -132,7 +140,7 @@ void recieveprocess(rxdata data){
     }
   }
   else{
-    mon.print("parity failed\n");
+   // mon.print("parity failed\n");
   }
   }
 
@@ -194,7 +202,7 @@ void printme(){
            }
         }
  }
- 
+
 void hc12_poweron_setup(){
   hc12_normalmode();
   delay(100);
@@ -306,12 +314,13 @@ timestruct gettime(int x){  // convert time from absolute second format to m1m0:
 
 }
 void update_displaydigit(unsigned char A, unsigned char B){  // show 1 digit (BCD) on display at location B (00-LSB-1st digit, 11-4th digit)
-  digitalWrite(10,(B>>0) & 0x01);
-  digitalWrite(9,(B>>1) & 0x01);
-  digitalWrite(8,(A>>0) & 0x01);  //a
-  digitalWrite(7,(A>>1) & 0x01);  //b
-  digitalWrite(6,(A>>2) & 0x01); //c
-  digitalWrite(5,(A>>3) & 0x01);  //d
+  digitalWrite(PIN_D0,(B>>0) & 0x01);  //E
+  digitalWrite(PIN_D1,(B>>1) & 0x01);   //F
+
+  digitalWrite(PIN_B3,(A>>3) & 0x01);  //d
+  digitalWrite(PIN_B0,(A>>0) & 0x01);  //a
+    digitalWrite(PIN_B1,(A>>1) & 0x01);  //b
+      digitalWrite(PIN_B2, (A>>2) & 0x01); //c
 }
 
 void showtime(timestruct t, int del){  // display time t and latch it for del seconds
@@ -321,6 +330,10 @@ void showtime(timestruct t, int del){  // display time t and latch it for del se
   update_displaydigit(t.m0,2);
   delay(1);
   update_displaydigit(t.s0,0);
+  // mon.print(t.m1);
+  // mon.print(t.m0);
+  // mon.print(t.s1);
+  //   mon.println(t.s0);
   delay(1);
   update_displaydigit(t.s1,1);  
   delay(del);
@@ -363,10 +376,10 @@ void initme(){   // initialize timer from EEPROM
   ts.m1=15;
   ts.m0=15;
   
-  ttest.s0=1;
-  ttest.s1=1;
-  ttest.m0=1;
-  ttest.m1=1;
+  // ttest.s0=1;
+  // ttest.s1=1;
+  // ttest.m0=1;
+  // ttest.m1=1;
 }
 
 
