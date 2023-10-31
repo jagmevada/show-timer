@@ -1,177 +1,8 @@
-#include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 // The project fails to build without the above two includes.
-#include <HardwareSerial.h>
-// #define FIRSTTIME
-typedef unsigned char uch;
-HardwareSerial &hc12 = Serial1;
-
-HardwareSerial &mon = Serial;
-
-
-#include "lcdgfx.h"
-#define RF_CH 30
-#define DEFAULTBAUD 9600
-#define SLOWBAUD 2400
-#define TIMERADDR 12  // Max 1-15
-#define POWER 8 
-
-String channel_cmd = String("AT+C0")+String(RF_CH);
-String power_cmd = String("AT+P")+String(POWER);
-String baud_cmd = String("AT+B")+String(SLOWBAUD);
-String check_cmd = String("AT");
-String rx_cmd = String("AT+RX");
-// #define PIN_TX1 PIN_PA2 // turn off hc12 completely
-// #define PIN_RX1 PIN_PA1 // turn off hc12 completely
-
-#define PIN_B0 PIN_PA4  //A
-#define PIN_B1 PIN_PA5  //B
-#define PIN_B2 PIN_PA6  //C
-#define PIN_B3 PIN_PA7  //D B3B2B1B0 is BCD code for selected digit
-#define PIN_D0 PIN_PB5  //E
-#define PIN_D1 PIN_PB4  //F  D1D0 Selects digit
-#define PIN_M0 PIN_PA3  //HC-12 module0 supply ON/OFF 1-OFF, 0-ON
-#define PIN_SET0 PIN_PC3 //HC-12 module0 setting mode, 1-Normal mode, 0-setting mode
-#define PIN_DISPLAY_POWER PIN_PB1 //ON/OFF  OF MAIN DIPOWERSPLAY 1-OFF, 0-ON
-//#HC-12 module 1 is redundant, not to be used for JJ116
-#define PIN_M1 PIN_PC0  //HC-12 module1 supply ON/OFF 1-OFF, 0-ON
-#define PIN_SET1 PIN_PB0 //HC-12 module1 setting mode, 1-Normal mode, 0-setting mode
-
-void setup_io(){
-// HC-12 MODULE Main IOs
-pinMode(PIN_M0, OUTPUT);
-pinMode(PIN_SET0, OUTPUT);
-digitalWrite(PIN_M0,1);  //1-OFF, 0-ON
-digitalWrite(PIN_SET0,0); // 1-NOMRAL MODE, 0-SETTING MODE
-
-// HC-12 MODULE Redundant IOs
-pinMode(PIN_M1, OUTPUT);
-pinMode(PIN_SET1, OUTPUT);
-digitalWrite(PIN_M1,1);  //1-OFF, 0-ON
-digitalWrite(PIN_SET1,0); // 1-NOMRAL MODE, 0-SETTING MODE
-  //DISPLAY IOs
-pinMode(PIN_B0,OUTPUT);
-pinMode(PIN_B1,OUTPUT);
-pinMode(PIN_B2,OUTPUT);
-pinMode(PIN_B3,OUTPUT);
-pinMode(PIN_D0,OUTPUT);
-pinMode(PIN_D1,OUTPUT);
-digitalWrite(PIN_B0,0);
-digitalWrite(PIN_B1,0);
-digitalWrite(PIN_B2,0);
-digitalWrite(PIN_B3,0);
-digitalWrite(PIN_D0,0);
-digitalWrite(PIN_D1,0);
-
-
-};
-
-void hc12_turnon(){
-  digitalWrite(PIN_M0,0);
-};
-void hc12_turnoff(){
-  digitalWrite(PIN_M0,1);
- // txrx_off();
-};
-void hc12_setmode(){
-  digitalWrite(PIN_SET0,0);
-};
-void hc12_normalmode(){
-  digitalWrite(PIN_SET0,1);
-  delay(100);
-};
-
-
-void hc12r_turnon(){
-  digitalWrite(PIN_M1,0);
-};
-void hc12r_turnoff(){
-  digitalWrite(PIN_M1,1);
-};
-void hc12r_setmode(){
-  digitalWrite(PIN_SET1,0);
-};
-void hc12r_normalmode(){
-  digitalWrite(PIN_SET1,1);
-};
-
-void setup_timer_b0(){
-  TCB0.CCMP = 40000;  // CCMP/4MHz. 
-  TCB0.CTRLA = TCB_CLKSEL_CLKDIV2_gc | TCB_ENABLE_bm | TCB_RUNSTDBY_bm;
-  TCB0.INTFLAGS = TCB_CAPT_bm;    // Clear any pending interrupt flags
-  TCB0.INTCTRL = TCB_CAPT_bm;    // Enable TCB0 timeout interrupt
-};
-
-void printme(){
-        static uch c;
-        if(hc12.available()){
-         while(hc12.available()){
-           mon.write(hc12.read());
-           }
-        }
- }
-void hc12_poweron_setup(){
-
-  hc12_normalmode();
-  delay(100);
-  #ifdef FIRSTTIME
-    hc12_turnoff();
-    delay(100);
-    hc12.begin(9600);
-    hc12_setmode();
-    hc12_turnon();
-    delay(100);
-    while(hc12.available())
-    hc12.read();
-    hc12.print(check_cmd);
-    delay(100);
-    printme();
-    hc12.print(channel_cmd);
-    delay(100);
-    printme();
-    hc12.print(power_cmd);
-    delay(100);
-    printme();
-    hc12.print(baud_cmd);
-    delay(100);
-    printme();    
-    hc12.print(check_cmd);
-    delay(100);
-    printme();
-    hc12.print(rx_cmd);
-    delay(200);
-    printme();
-    hc12_normalmode();
-    delay(400);
-    hc12.end();
-    delay(100);
-    hc12_setmode();
-    #endif
-    hc12.begin(2400);
-     delay(100);
-    while(hc12.available())
-    hc12.read();
-    #ifdef FIRSTTIME
-       hc12.print(check_cmd);
-    delay(100);
-    printme();
-       hc12.print(rx_cmd);
-    delay(100);
-    printme();
-   #endif
-    };
-
-void hc12_setup_hot(){
-    //hc12_turnoff();
-    hc12_normalmode();
-    hc12_turnon();
-    delay(1000);
-    hc12.begin(9600);
-    hc12_setmode();
-};
-
-
+#include "functions.hpp"
+// #define FIRSTTIM
 void setup() {
   setup_io();
   setup_timer_b0();
@@ -179,19 +10,54 @@ void setup() {
   //hc12_setup_cold();
     mon.begin(9600);
   hc12_poweron_setup();
-   hc12_turnon();
-//  hc12_normalmode();
-    sei(); // Enable global interrupts
+  hc12_turnon();
+  sei(); // Enable global interrupts
   // set_sleep_mode(SLEEP_MODE_STANDBY );  
   // sleep_mode();
  mon.end();
  hc12_normalmode();
  delay(100);
  mon.begin(2400);
-    }
+ stateset = HIGH;
+ statestop = LOW;
+}
 
 
 void loop() {
+static byte startstop;
+
+if(stateset==HIGH){  // setting mode, restore from stored value from EEPROM
+    stateset=LOW;
+    initme();
+    x=t0;
+  }
+
+ //routine work  & start stop
+if(statestop==HIGH){  // time hold (hc12 can resume it)
+    while(statestop){  // if time is hold  1=hold, 0=resume
+        //blinkx(x, 400);
+        showtime(gettime(x),10);  // show x time for 10ms
+        if ((millis()-timesince >2000))
+        blinkx(x,90,8,9);  // to indicate the display is in hold state
+        x=settime(x);//update x using hc12 data
+        startstop=LOW; 
+                if(stateset==HIGH){  /// in hold state if set button is pressed
+                  stateset=LOW; // setting is stored, now resume statestop=0
+                  x=t0;
+                  }     
+      }
+}
+else{  // time resumed
+
+}
+
+if(hc12.available()){
+    rxdata data;
+    data.byte = hc12.read();
+    recieveprocess(data);
+}
+}
+
   // set_sleep_mode(SLEEP_MODE_STANDBY );  
   // sleep_mode();
 //  if(Serial1.available()){
@@ -209,19 +75,7 @@ void loop() {
 //     Serial1.write(Serial1.read());
 //   }
 //
-static uch x;
-delay(1000);
-if(hc12.available()){
-  while(hc12.available()>0){
-  mon.print(hc12.read());
-  }
-}
-// mon.println(x);
-hc12.write(x++);
-delay(100);
-//digitalWrite(LED_BUILTIN, x&1);
 
-//
  //hc12_turnoff();
 //hc12_normalmode();
    //delay(5000);
@@ -236,12 +90,28 @@ delay(100);
 //  hc12_turnoff();
  
  
- }
+ 
+
+
+void debug_comlink(){
+  static uch newdata;
+delay(1000);
+if(hc12.available()){
+  while(hc12.available()>0){
+  mon.print(hc12.read());
+  }
+}
+// mon.println(x);
+hc12.write(newdata++);
+delay(100);
+}
+
+
 
 
 
 ISR(TCB0_INT_vect) {   /// 10ms timer
- static unsigned int timercount=0;
+ static uch timercount=0;
      
   switch(timercount)
   {
@@ -264,7 +134,8 @@ ISR(TCB0_INT_vect) {   /// 10ms timer
     case 9:
     break;
     case 10:  // 10*10 ms round up
-      timercount=0;      
+      timercount=0;   
+
       break;
   default:
     break;
