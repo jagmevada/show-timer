@@ -1,24 +1,32 @@
-#include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 // The project fails to build without the above two includes.
 
+#include <Arduino.h>
 
-#include "functions.hpp"
-#include "counter.hpp"
 #include "lcdgfx.h"
 #include "lcdgfx_gui.h"
 // #include "owl.h"
 
-// Analog to digital converter time?
-#define ADCTIME 20  // multiply by 100ms
-// Sync time?
-#define SYNC_TIME 10            // multiply by 100ms
+#define CHARGEPIN PIN_PA7        // 3
+#define BATTERY_SENSPIN PIN_PA6  // 2
+#define BTN_LEFT PIN_PA5         // 1  // S4
+#define BTN_RIGHT PIN_PC3        // 13  // S5
+#define BTN_UP PIN_PC0           // 10  // S1
+#define BTN_OK PIN_PC1           // 11  // S2
+#define BTN_DOWN PIN_PC2         // 12  // S3
+#define BTN_K PIN_PB5            // for battery only
+#define EXTRA_PIN PIN_PB4
+#define HC_SW PIN_PA3
+#define HC_SET PIN_PA4
+#define OLED_SW PIN_PB3
+
+#define ADCTIME 20              // multiply by 100ms
+#define SYNCTIME 10             // multiply by 100ms
 #define BMS_TRIGGER_PERIOD 100  // multiply by 100ms
 
-DisplaySSD1306_128x64_I2C display(-1);
-// or (-1,{busId, addr, scl, sda, frequency}). This line is suitable for most platforms by default
-
+DisplaySSD1306_128x64_I2C display(
+    -1);  // or (-1,{busId, addr, scl, sda, frequency}). This line is suitable for most platforms by default
 unsigned char resolution = 0;
 
 int mcount = 0;
@@ -30,27 +38,20 @@ char cm[6];
 char cf[6];
 char ct[6];
 char cbat[5];
-uch rxdata;
-uch crxdata[4];
 
-ConfigurableDownCounter counter(1, 02);
-char down_counter_output[10];
-volatile bool is_paused = false;
-volatile uint8_t position_to_update = 0;
-
-volatile bool charger_state = false;
-volatile unsigned char button_state = 0;
-volatile bool button_update = false;
-volatile bool update_count = false;
-volatile uint16_t adc_reading = 0;
-volatile unsigned long t_charge = 0;
-volatile bool update_charger = true;
-volatile bool update_display = false;
-volatile bool update_battery_sense = false;
-volatile unsigned char BMS_time = 2;
+unsigned char chargerstate = 0;
+unsigned char buttonstate = 0;
+unsigned char buttonupdate = 0;
+uint8_t countupdate = 0;
+uint16_t adc_reading = 0;
+unsigned long t_charge = 0;
+unsigned char chargerupdate = 1;
+unsigned char displayupdate = 0;
+unsigned char batterysenseupdate = 0;
+unsigned char BMS_time = 2;
 
 void isr_charger() {
-    update_charger = true;
+    chargerupdate = 1;
     if (!digitalRead(CHARGEPIN)) {
         display.clear();
         digitalWrite(OLED_SW, 1);
@@ -58,95 +59,47 @@ void isr_charger() {
     }
 }
 
-void isr_btn_up() {
-    if (is_paused) {
-        update_display = true;
-        switch (position_to_update) {
-            case 0: {
-                counter.IncrementTensMinuteDigit();
-                break;
-            }
-            case 1: {
-                counter.IncrementOnesMinuteDigit();
-                break;
-            }
-            case 2: {
-                counter.IncrementTensSecondDigit();
-                break;
-            }
-            case 3: {
-                counter.IncrementOnesSecondDigit();
-                break;
-            }
-            default: {
-            }
-        }
-    }
+void isr_btn_up() { digitalWrite(HC_SW, 1); };
+
+void isr_btn_ok() {
+    buttonupdate = 1;
+    fcount = 0;
+    mcount = 0;
+    // display.clear();
+};
+
+void isr_btn_right() { isr_btn_ok(); };
+
+void isr_btn_left(){
+
 };
 
 void isr_btn_down() {
-    if (is_paused) {
-        update_display = true;
-        switch (position_to_update) {
-            case 0: {
-                counter.DecrementTensMinuteDigit();
-                break;
-            }
-            case 1: {
-                counter.DecrementOnesMinuteDigit();
-                break;
-            }
-            case 2: {
-                counter.DecrementTensSecondDigit();
-                break;
-            }
-            case 3: {
-                counter.DecrementOnesSecondDigit();
-                break;
-            }
-            default: {
-            }
-        }
-    }
-};
-
-void isr_btn_ok() {
-    is_paused = !is_paused;
-    // oled_synctime = 0;
-    // update_display = true;
-};
-
-void isr_btn_right() {
-    if (is_paused) {
-        position_to_update = min(position_to_update + 1, 3);
-    }
-};
-
-void isr_btn_left() {
-    if (is_paused) {
-        position_to_update = max(position_to_update - 1, 0);
-    }
+    static char x = 0;
+    digitalWrite(HC_SET, x++ & 1);
 };
 
 void isr_btn_k() {
     BMS_time = 2;
 };
 
+class Remote {
+    Remote() = default;
+    int a;
+};
+
 void setup_display() {
     display.clear();
-    // 0 == power on
     digitalWrite(OLED_SW, 0);
-
     display.setFixedFont(ssd1306xled_font6x8);
     lcd_delay(10);
-
     display.clear();
     lcd_delay(100);
-
     display.begin();
     lcd_delay(100);
-
     display.clear();
+    lcd_delay(100);
+    display.setFixedFont(ssd1306xled_font6x8);
     lcd_delay(100);
 };
 
@@ -160,11 +113,8 @@ void setup_io() {
     pinMode(BTN_DOWN, INPUT);
     pinMode(BTN_LEFT, INPUT);
     pinMode(BTN_RIGHT, INPUT);
-
-    pinMode(PIN_M0, OUTPUT);
-    pinMode(PIN_SET0, OUTPUT);
-    digitalWrite(PIN_M0,1);  //1-OFF, 0-ON
-    digitalWrite(PIN_SET0,0); // 1-NOMRAL MODE, 0-SETTING MODE
+    pinMode(HC_SW, OUTPUT);
+    pinMode(HC_SET, OUTPUT);
 
     digitalWrite(EXTRA_PIN, 1);
     digitalWrite(OLED_SW, 1);
@@ -187,27 +137,16 @@ void setup_adc() {
 };
 
 void setup_timer_b0() {
-    // Enable the counter peripheral
-    TCB0.CTRLA = TCB_ENABLE_bm;
-    // Use the peripheral clock's frequency / 2 (8MHz/2 = 4MHz)
-    TCB0.CTRLA |= TCB_CLKSEL_CLKDIV2_gc;
-    // Enable the peripheral to run in Standby sleep mode
-    TCB0.CTRLA |= TCB_RUNSTDBY_bm;
-
-    // CCMP/4MHz = 0.01 seconds = 10 milliseconds
-    // That is, the ISR will be invoked every 10ms.
-    TCB0.CCMP = 40000;
-
-    // Clear any pending interrupt flags
-    TCB0.INTFLAGS = TCB_CAPT_bm;
-    // Enable TCB0 timeout interrupt
-    TCB0.INTCTRL = TCB_CAPT_bm;
+    TCB0.CCMP = 40000;  // CCMP/4MHz.
+    TCB0.CTRLA = TCB_CLKSEL_CLKDIV2_gc | TCB_ENABLE_bm | TCB_RUNSTDBY_bm;
+    TCB0.INTFLAGS = TCB_CAPT_bm;  // Clear any pending interrupt flags
+    TCB0.INTCTRL = TCB_CAPT_bm;   // Enable TCB0 timeout interrupt
 };
 
 void counting() {
     total = mcount + fcount;
     sprintf(cm, "%d", mcount);  // analogRead(BUTTON));
-    sprintf(cf, "%d", fcount);  // fcount);a
+    sprintf(cf, "%d", fcount);  // fcount);
     sprintf(ct, "%d", total);
 }
 
@@ -217,23 +156,46 @@ void battery_sensing() {  // read Battery voltage
     if (batterylevel > 100) {
         batterylevel = 100;
     }
-    if (!charger_state) {
+    if (!chargerstate) {
         sprintf(cbat, "%d", batterylevel);
     }
 }
 
 void battery_charge_state() {
     if (digitalRead(CHARGEPIN))
-        charger_state = true;
+        chargerstate = 1;
     else
-        charger_state = false;
+        chargerstate = 0;
 }
 
-void update_display_state() {
-    counter.SetOutputString(down_counter_output);
-    display.printFixedN(0, 2, down_counter_output, STYLE_NORMAL, 2);
-    snprintf(crxdata, 4, "%d", rxdata);
-    display.printFixedN(0,34, crxdata, STYLE_NORMAL, 1);
+void displaystate() {
+    // display.clear();
+    display.printFixedN(0, 1, "J :", STYLE_NORMAL, 1);
+    display.printFixedN(48, 1, "         ", STYLE_NORMAL, 1);
+    display.printFixedN(48, 1, cm, STYLE_NORMAL, 1);
+    display.printFixedN(0, 20, "F :", STYLE_NORMAL, 1);
+    display.printFixedN(48, 20, "        ", STYLE_NORMAL, 1);
+    display.printFixedN(48, 20, cf, STYLE_NORMAL, 1);
+    display.printFixedN(0, 38, "T :", STYLE_NORMAL, 1);
+    display.printFixedN(48, 38, "        ", STYLE_NORMAL, 1);
+    display.printFixedN(48, 38, ct, STYLE_NORMAL, 1);
+    if (!chargerstate) {
+        display.printFixedN(0, 60, "Bat:", STYLE_NORMAL, 0);
+
+        if (batterylevel < 10) {
+            display.printFixedN(24, 60, cbat, STYLE_NORMAL, 0);
+            display.printFixedN(30, 60, "%  ", STYLE_NORMAL, 0);
+        } else if (batterylevel > 99) {
+            display.printFixedN(24, 60, cbat, STYLE_NORMAL, 0);
+            display.printFixedN(42, 60, "%  ", STYLE_NORMAL, 0);
+        } else {
+            display.printFixedN(24, 60, cbat, STYLE_NORMAL, 0);
+            display.printFixedN(36, 60, "%  ", STYLE_NORMAL, 0);
+        };
+
+    } else {
+        display.printFixedN(24, 60, "Charging", STYLE_NORMAL, 0);
+    };
 }
 
 void setup() {
@@ -241,140 +203,92 @@ void setup() {
     setup_adc();
     setup_display();
     setup_timer_b0();
-    hc12_poweron_setup();
-    hc12_normalmode();
-
     sei();  // Enable global interrupts
-  //  set_sleep_mode(SLEEP_MODE_STANDBY);
+    set_sleep_mode(SLEEP_MODE_STANDBY);
+    sleep_mode();
 }
 
 void loop() {
-    // Enter sleep mode at the start of every iteration.
-   // sleep_mode();
-
-    // The following code is executed everytime an interrupt occures,
-    // which causes an exit from the sleep mode.
-    if (update_count) {
+    set_sleep_mode(SLEEP_MODE_STANDBY);
+    sleep_mode();
+    // fcount++;
+    if (countupdate) {
         counting();
-        update_count = false;
+        countupdate = 0;
     }
-    if (update_battery_sense) {
+    if (batterysenseupdate) {
         battery_sensing();
-        update_battery_sense = false;
+        batterysenseupdate = 0;
     }
-    if (update_charger) {
+    if (chargerupdate) {
         battery_charge_state();
-        update_charger = false;
+        chargerupdate = 0;
     }
-    if (update_display) {
-        update_display_state();
-        update_display = false;
+    if (displayupdate) {
+        displaystate();
+        displayupdate = 0;
     }
 }
 
-// Interrupt service routine for timer zero interrupt.
-// Current being invoked every 10ms.
-ISR(TCB0_INT_vect) {
-    static unsigned int timer_count = 0;
-    static uint8_t bat_adc_time = ADCTIME;
-    static uint8_t oled_synctime = SYNC_TIME;
-    static uint8_t count_time = SYNC_TIME;
-    // static unsigned int xx = 0;
+ISR(TCB0_INT_vect) {  /// 10ms timer
+    static unsigned int timercount = 0, xx = 0;
 
-    // TL;DR: each case is executed every 100ms
-    //
-    // After the first round of timer_count increments,
-    // each case is executed every 100ms (The ISR is invoked
-    // every 10ms, at which point ONLY ONE switch case will be
-    // executed, and timer_count will be incremented, essentially
-    // doing a round-robin among the cases every 10ms, and coming
-    // back to the same case every 10ms * NUM_SWITCH_CASES(10 in this case) = 100ms)
-    switch (timer_count) {
-        case 0: {
-            if (button_update) {
+    switch (timercount) {
+        static uint8_t bat_adctime = ADCTIME;
+        static uint8_t oled_synctime = SYNCTIME;
+        static uint8_t counttime = SYNCTIME;
+        case 0:
+            if (buttonupdate == 1) {
                 fcount = 0;
                 mcount = 0;
-                button_update = false;
+                buttonupdate = 0;
             }
             break;
-        }
-        case 2: {
-            // digitalWrite(EXTRA_PIN, (xx++) & 1);
-
-            // The BMS module being used is designed such that
-            // if the current being drawn is less the 40mA (the remote's
-            // power draw is ~15mA), the module will go into sleep mode after
-            // 15 seconds, essentially powering-off the whole system after 15
-            // seconds; not something we want :). Therefore, we work around
-            // this by doing the software equivalent of pushing the button
-            // every 10s (for a duration of 100ms):
+        case 2:
+            digitalWrite(EXTRA_PIN, (xx++) & 1);
             if (BMS_time >= BMS_TRIGGER_PERIOD) {
-                // Detach the interrupt as we want to write to it via software
                 detachInterrupt(BTN_K);
                 pinMode(BTN_K, OUTPUT);
-
-                // The buttons are HIGH (aka, pulled-up) by default, and pushing
-                // them makes the pin go LOW. Hence doing the same here.
-                digitalWrite(BTN_K, LOW);
+                digitalWrite(BTN_K, 0);
                 BMS_time = 0;
             } else if (BMS_time == 1) {
-                // This conditional is executed 100ms after the if statement
-                // above.
                 digitalWrite(BTN_K, 1);
                 pinMode(BTN_K, INPUT);
                 attachInterrupt(BTN_K, isr_btn_k, FALLING);
-            } else {
-            }
+            } else
+                ;
             break;
-        }
-        case 4: {
-            bat_adc_time--;
-            if (bat_adc_time == 0) {
-                bat_adc_time = ADCTIME;
-                update_battery_sense = true;
+        case 4:
+            bat_adctime--;
+            if (bat_adctime == 0) {
+                bat_adctime = ADCTIME;
+                batterysenseupdate = 1;
             }
-            update_charger = true;  // fail safe but consume clocks
+            chargerupdate = 1;  // fail safe but consume clocks
             break;
-        }
-        case 6: {
-            count_time--;
-            if (count_time == 0) {
-                static uch xx=0;
-                update_count = true;
+        case 6:
+            counttime--;
+            if (counttime == 0) {
+                countupdate = 1;
                 mcount++;
                 fcount++;
-                count_time = SYNC_TIME;
-                
+                counttime = SYNCTIME;
             }
             break;
-        }
-
-        // 10*10 ms round up
-        case 10: {
-            timer_count = 0;
+        case 8:
+            break;
+        case 10:  // 10*10 ms round up
+            timercount = 0;
             BMS_time++;
-
-            if (not is_paused) {
-                --oled_synctime;
-                if (oled_synctime == 0) {
-                    update_display = true;
-                    counter.CountDownByOneSecond();
-                    oled_synctime = SYNC_TIME;
-                }
-            }
-
-            if(hc12.available()){
-                rxdata=hc12.read();
-                hc12.write(rxdata);
+            oled_synctime--;
+            if (oled_synctime == 0) {
+                displayupdate = 1;
+                oled_synctime = SYNCTIME;
             }
             break;
-        }
-        default: {
+        default:
             break;
-        }
     }
-
-    timer_count++;
-    // Clear the interrupt flag
-    TCB0.INTFLAGS = TCB_CAPT_bm;
+    timercount++;
+    TCB0.INTFLAGS = TCB_CAPT_bm; /* Clear the interrupt flag */
 }
