@@ -40,7 +40,7 @@
 #define SLOWBAUD 2400
 #define TIMERADDR 12  // Max 1-15
 #define POWER 8
-#define MYADDRESS 10
+#define MYADDRESS 1
 
 String channel_cmd = String("AT+C0") + String(RF_CH);
 String power_cmd = String("AT+P") + String(POWER);

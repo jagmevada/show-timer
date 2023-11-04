@@ -6,7 +6,6 @@
 
 void setup() {
   setup_io();
-  setup_timer_b0();
   hc12r_turnoff();
   // hc12_setup_cold();
   mon.begin(9600);
@@ -18,6 +17,7 @@ void setup() {
   mon.end();
   hc12_normalmode();
   delay(100);
+  setup_timer_b0();
   mon.begin(9600);  // should be 2400
   stateset = HIGH;
   statestop = LOW;
