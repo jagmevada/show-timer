@@ -64,7 +64,7 @@ volatile uch statestop = LOW;
 ulnt timesince = 0;
 int t0 = 1200;
 int x = 1200;
-unt eeprom_x;
+unt eeprom_x = 1200;
 ulnt rxwait;
 uch processnewdata;
 uch staterestart;
