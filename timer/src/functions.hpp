@@ -143,12 +143,15 @@ void recieveprocess(rxdata data) {
           eeprom_x =
               (rnewdata.fields.msb & 0x7f) * 60 + (rnewdata.fields.lsb & 0x7f);
           eepromwrite();
+          x = eeprom_x;
+          statestop = LOW;
           break;
         case CMD_EEPROM1:
           mon.println("EEPROM 7");
           break;
         case CMD_RESTART:
           mon.println("RESTART 0");
+          staterestart = HIGH;
           eepromread();
           statestop = LOW;
           break;

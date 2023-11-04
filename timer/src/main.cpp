@@ -80,7 +80,11 @@ void loop() {
       showtime(ts, 700);  // display "next show" on panel
       // showtime(ttest,500);
       showtime(tx, 300);  // display two dots ":" on panel
-      // showtime(ttest,500);
+                          // showtime(ttest,500);
+      if (processnewdata) {
+        recieveprocess(rdata);
+        processnewdata = 0;
+      }
       if (staterestart) {  // restart the timer
         staterestart = LOW;
         restart = HIGH;
