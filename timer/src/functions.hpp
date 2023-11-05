@@ -162,6 +162,7 @@ void recieveprocess(rxdata data) {
           staterestart = HIGH;
           eepromread();
           statestop = LOW;
+          hc12.write(data.byte);
           break;
         default:
           mon.print("command not implemented");
