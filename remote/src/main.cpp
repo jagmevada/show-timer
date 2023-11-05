@@ -340,6 +340,13 @@ void update_display_state() {
   // battery display
   display.printFixedN(0, 51, cbat, STYLE_NORMAL, 0);
 
+  // dispaly address
+  {
+    static char address_display[7];
+    snprintf(address_display, 7, "add:%d", MYADDRESS);
+    display.printFixedN(82, 51, address_display, STYLE_NORMAL, 0);
+  }
+
   // EEPROM display
   {
     static uint8_t mins = 0;
