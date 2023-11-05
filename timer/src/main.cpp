@@ -67,55 +67,59 @@ void loop()
     }
 
     startstop = HIGH;
-    if (((x % 9 == 6) ||
-         (x % 9 == 7)))
-    { /// for 2 seconds in the middle display "next show"
-      showtime(ts, SEC);
-    }
-    else if (x <= 50 &&
-             x > 0)
-    { // start blinking when time is less than 50seconds
-      blinkx(x, 500, 5, 6);
-      blinkx(x, 500, 5, 6);
-    }
-    else if (x == 0)
-    { // bursting mode when time is reached 0
-      // for (int i = 0; i < 20; i++) blinkx(0, (1000 - i * 50) / 5 + 50, 1, 2);
-      // for (int i = 0; i < 10; i++) blinkx(0, (1000 - i * 50) / 30 + 40, 1, 2);
-      // blinkx(0, 200, 1, 10);
-      // blinkx(0, 500, 9, 10);
+    if (!statestop)
+    {
+      if (((x % 9 == 6) ||
+           (x % 9 == 7)))
+      { /// for 2 seconds in the middle display "next show"
+        showtime(ts, SEC);
+      }
+      else if (x <= 50 &&
+               x > 0)
+      { // start blinking when time is less than 50seconds
+        blinkx(x, 500, 5, 6);
+        blinkx(x, 500, 5, 6);
+      }
+      else if (x == 0)
+      { // bursting mode when time is reached 0
+        // for (int i = 0; i < 20; i++) blinkx(0, (1000 - i * 50) / 5 + 50, 1, 2);
+        // for (int i = 0; i < 10; i++) blinkx(0, (1000 - i * 50) / 30 + 40, 1, 2);
+        // blinkx(0, 200, 1, 10);
+        // blinkx(0, 500, 9, 10);
 
-      // showtime(tx,(d-n)*timex/d);
+        // showtime(tx,(d-n)*timex/d);
 
-      int restart = LOW;
+        int restart = LOW;
 
-      // initme();
-      // x=t0;
-      while (!restart)
-      {
-        delay(40);
-        showtime(ts, 700); // display "next show" on panel
-        // showtime(ttest,500);
-        showtime(tx, 300); // display two dots ":" on panel
-                           // showtime(ttest,500);
-        if (processnewdata)
+        // initme();
+        // x=t0;
+        while (!restart)
         {
-          recieveprocess(rdata);
-          processnewdata = 0;
-        }
-        if (staterestart)
-        { // restart the timer
-          staterestart = LOW;
-          restart = HIGH;
-          initme(); // get time x from memory and store in t0 structure
-          x = t0;
+          delay(40);
+          showtime(ts, 700); // display "next show" on panel
+          // showtime(ttest,500);
+          showtime(tx, 300); // display two dots ":" on panel
+                             // showtime(ttest,500);
+          if (processnewdata)
+          {
+            recieveprocess(rdata);
+            processnewdata = 0;
+          }
+          if (staterestart)
+          { // restart the timer
+            staterestart = LOW;
+            restart = HIGH;
+            initme(); // get time x from memory and store in t0 structure
+            x = t0;
+          }
         }
       }
-    }
-    else
-    { // tick counting down to 0
-      ti = gettime(x);
-      showtime(ti, SEC);
+
+      else
+      { // tick counting down to 0
+        ti = gettime(x);
+        showtime(ti, SEC);
+      }
     }
   } // CONNECTED
   // mon.println(x);
