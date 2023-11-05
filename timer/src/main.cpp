@@ -23,6 +23,7 @@ void setup() {
   statestop = LOW;
   processnewdata = LOW;
   staterestart = HIGH;
+  x = 0;
 }
 
 void loop() {
@@ -103,18 +104,18 @@ void loop() {
   }
 }
 
-void debug_comlink() {
-  static uch newdata;
-  delay(1000);
-  if (hc12.available()) {
-    while (hc12.available() > 0) {
-      mon.print(hc12.read());
-    }
-  }
-  // mon.println(x);
-  hc12.write(newdata++);
-  delay(100);
-}
+// void debug_comlink() {
+//   static uch newdata;
+//   delay(1000);
+//   if (hc12.available()) {
+//     while (hc12.available() > 0) {
+//       mon.print(hc12.read());
+//     }
+//   }
+//   // mon.println(x);
+//   hc12.write(newdata++);
+//   delay(100);
+// }
 
 ISR(TCB0_INT_vect) {  /// 10ms timer
   static uch timercount = 0;
@@ -158,7 +159,6 @@ ISR(TCB0_INT_vect) {  /// 10ms timer
   if (hc12.available() > 0 && !newdata_available) {
     newdata_available = 1;
     rdata.byte = hc12.read();  // read command
-    hc12.write(rdata.byte);
   }
 
   timercount++;

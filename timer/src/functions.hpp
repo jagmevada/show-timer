@@ -35,12 +35,12 @@
   PIN_PB0  // HC-12 module1 setting mode, 1-Normal mode, 0-setting mode
 
 #include "lcdgfx.h"
-#define RF_CH 30
+#define MYADDRESS 1
 #define DEFAULTBAUD 9600
 #define SLOWBAUD 2400
 #define TIMERADDR 12  // Max 1-15
 #define POWER 8
-#define MYADDRESS 1
+#define RF_CH (10 + MYADDRESS)
 
 String channel_cmd = String("AT+C0") + String(RF_CH);
 String power_cmd = String("AT+P") + String(POWER);
@@ -72,8 +72,6 @@ HardwareSerial &hc12 = Serial1;
 HardwareSerial &mon = Serial;
 
 #include <stdio.h>
-
-#define MYADDRESS 0x0A
 
 #define CMD_RESTART 0
 #define CMD_RESUME 1
@@ -119,17 +117,23 @@ void recieveprocess(rxdata data) {
         case CMD_RESUME:  // 1
           mon.println("RESUMED 1");
           statestop = LOW;
+          hc12.write(data.byte);
           break;
         case CMD_HOLD:  // 2
           mon.println("HOLD 2");
           statestop = HIGH;
+          hc12.write(data.byte);
           break;
         case CMD_SET_RESUME:  // 3
-          mon.println("SET 3");
-          // paritycheck(rnewdata.fields.msb)
-          x = (rnewdata.fields.msb & 0x7f) * 60 + (rnewdata.fields.lsb & 0x7f);
-          // eepromwrite();
-          statestop = LOW;
+          if (paritycheck(rnewdata.fields.msb) == 1 &&
+              paritycheck(rnewdata.fields.lsb) == 1) {
+            mon.println("SET 3");
+            x = (rnewdata.fields.msb & 0x7f) * 60 +
+                (rnewdata.fields.lsb & 0x7f);
+            // eepromwrite();
+            statestop = LOW;
+            hc12.write(data.byte);
+          }
           break;
 
         case CMD_STATUS:  // 4
@@ -139,12 +143,16 @@ void recieveprocess(rxdata data) {
           mon.println("NEWDATA 5");
           break;
         case CMD_EEPROM:
-          mon.println("EEPROM 6");
-          eeprom_x =
-              (rnewdata.fields.msb & 0x7f) * 60 + (rnewdata.fields.lsb & 0x7f);
-          eepromwrite();
-          x = eeprom_x;
-          statestop = LOW;
+          if (paritycheck(rnewdata.fields.msb) == 1 &&
+              paritycheck(rnewdata.fields.lsb) == 1) {
+            mon.println("EEPROM 6");
+            eeprom_x = (rnewdata.fields.msb & 0x7f) * 60 +
+                       (rnewdata.fields.lsb & 0x7f);
+            eepromwrite();
+            x = eeprom_x;
+            statestop = LOW;
+            hc12.write(data.byte);
+          }
           break;
         case CMD_EEPROM1:
           mon.println("EEPROM 7");
