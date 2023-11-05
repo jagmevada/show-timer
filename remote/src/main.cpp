@@ -75,8 +75,6 @@ typedef union {
   protocol_byte fields;
 } protocol_data;
 
-#define MYADDRESS 10
-
 #define CMD_RESTART 0
 #define CMD_RESUME 1
 #define CMD_HOLD 2

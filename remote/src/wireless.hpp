@@ -7,7 +7,8 @@
 
 HardwareSerial &hc12 = Serial1;
 
-#define RF_CH 30
+#define MYADDRESS 3
+#define RF_CH (10 + MYADDRESS)
 #define DEFAULTBAUD 9600
 #define SLOWBAUD 2400
 #define TIMERADDR 12  // Max 1-15
