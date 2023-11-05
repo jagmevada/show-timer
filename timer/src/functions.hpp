@@ -72,6 +72,7 @@ uch staterestart;
 HardwareSerial &hc12 = Serial1;
 HardwareSerial &mon = Serial;
 unsigned char connected = 0;
+
 #include <stdio.h>
 
 #define CMD_RESTART 0

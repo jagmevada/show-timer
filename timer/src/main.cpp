@@ -33,7 +33,6 @@ void loop()
   static byte startstop;
   if (connected)
   {
-
     if (staterestart)
     { // setting mode, restore from stored value from EEPROM
       staterestart = LOW;
