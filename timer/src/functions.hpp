@@ -70,6 +70,7 @@ uch processnewdata;
 uch staterestart;
 HardwareSerial &hc12 = Serial1;
 HardwareSerial &mon = Serial;
+unsigned char connected = 0;
 
 #include <stdio.h>
 
@@ -169,6 +170,7 @@ void recieveprocess(rxdata data) {
           mon.println(data.fields.command);
           break;
       }
+      connected = HIGH;
     } else {
       mon.println("Invalid Address");
       mon.print(data.fields.address);
