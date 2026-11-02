@@ -35,7 +35,9 @@
   PIN_PB0 // HC-12 module1 setting mode, 1-Normal mode, 0-setting mode
 
 #include "lcdgfx.h"
+#ifndef MYADDRESS  // per panel (1..15, shown as 00:NN at power-up): build with -DMYADDRESS=N
 #define MYADDRESS 1
+#endif
 #define DEFAULTBAUD 9600
 #define SLOWBAUD 2400
 #define TIMERADDR 12 // Max 1-15
