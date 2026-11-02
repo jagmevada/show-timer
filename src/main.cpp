@@ -20,6 +20,7 @@
 #include <EEPROM.h>
 #include <Wire.h>
 #include <avr/sleep.h>
+#include "bigdigits.h"
 #include "counter.hpp"
 #include "lcdgfx.h"
 #include "protocol.h"
@@ -84,23 +85,24 @@ uint16_t vbatMv() {
 void draw() {
   if (!screenOn) return;
   char s[24];
-  snprintf(s, sizeof s, "%02u:%02u", counter.GetMinutes(), counter.GetSeconds());
-  display.setFixedFont(comic_sans_font24x32_123);  // native 24x32 digits: smooth, not a scaled 6x8
-  display.printFixed(4, 0, s, STYLE_NORMAL);       // 5 chars x 24 px
-  display.setFixedFont(ssd1306xled_font8x16);
-  display.printFixed(0, 32, "                ", STYLE_NORMAL);
-  static const uint8_t X[] = {4, 28, 76, 100};  // digit columns of the time
-  if (paused) display.printFixed(X[cursor] + 8, 32, "^", STYLE_NORMAL);
+  uint8_t m = counter.GetMinutes(), sec = counter.GetSeconds(), dig[] = {m / 10, m % 10, sec / 10, sec % 10};
+  static const uint8_t X[] = {3, 31, 69, 97};  // digit columns; the narrow colon sits at 59
+  for (uint8_t i = 0; i < 4; i++) {            // rows 16-63: the blue part of the 2-colour OLED
+    display.setBackground(paused && cursor == i ? 0xFF : 0);  // the digit being edited is drawn inverted
+    display.drawBitmap1(X[i], 16, BIG_W, BIG_H, BIG_DIGITS[dig[i]]);
+  }
+  display.setBackground(0);
+  display.drawBitmap1(59, 16, COLON_W, BIG_H, BIG_COLON);
   display.setFixedFont(ssd1306xled_font6x8);
   snprintf(s, sizeof s, "%-21s", msg);
-  display.printFixed(0, 48, s, STYLE_NORMAL);
+  display.printFixed(0, 8, s, STYLE_NORMAL);  // rows 0-15 are yellow: the two status lines
   uint16_t mv = vbatMv();
   // 2xAAA alkaline is close to linear between 2.0 V (empty) and 3.0 V (full); fresh cells read up to 3.2 V.
   int pct = constrain(((int)mv - 2000) / 10, 0, 100);
   uint8_t em, es;
   savedTime(em, es);
   snprintf(s, sizeof s, "%u.%02uV %3d%% E%02u:%02u A%u ", mv / 1000, mv % 1000 / 10, pct, em, es, MYADDRESS);
-  display.printFixed(0, 56, s, STYLE_NORMAL);
+  display.printFixed(0, 0, s, STYLE_NORMAL);
 }
 
 void setMsg(const char *a, const char *b = "") {
@@ -257,7 +259,7 @@ void banner(const char *title, const char *hint) {  // 1 s notice before the scr
   if (!screenOn) return;
   display.clear();
   display.setFixedFont(ssd1306xled_font8x16);
-  display.printFixed((128 - 8 * strlen(title)) / 2, 8, title, STYLE_NORMAL);
+  display.printFixed((128 - 8 * strlen(title)) / 2, 0, title, STYLE_NORMAL);  // yellow band
   display.setFixedFont(ssd1306xled_font6x8);
   display.printFixed(7, 32, "timer keeps running", STYLE_NORMAL);
   display.printFixed((128 - 6 * strlen(hint)) / 2, 48, hint, STYLE_NORMAL);
