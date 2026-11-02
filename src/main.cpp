@@ -188,6 +188,7 @@ bool hcConfig() {
   bool ok = true;
   for (const char *c : AT) ok &= hcCmd(c);
   hcCmd("AT+RX", 400);  // all parameters, for the J5 log
+  hcCmd("AT+V", 300);   // firmware version, for the J5 log
   digitalWrite(HC_SET, HIGH);  // leave AT mode while powered: settings take effect
   delay(600);
   HC.end();
