@@ -1,0 +1,118 @@
+{
+ "add_components": [
+  {
+   "designator": "R23",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_PWR"
+    }
+   ]
+  },
+  {
+   "designator": "R24",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_UP"
+    }
+   ]
+  },
+  {
+   "designator": "R25",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_LEFT"
+    }
+   ]
+  },
+  {
+   "designator": "R26",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_OK"
+    }
+   ]
+  },
+  {
+   "designator": "R27",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_RIGHT"
+    }
+   ]
+  },
+  {
+   "designator": "R28",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_DOWN"
+    }
+   ]
+  }
+ ]
+}

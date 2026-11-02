@@ -1,0 +1,55 @@
+{
+ "add_components": [
+  {
+   "designator": "J6",
+   "value": "PWR_SW",
+   "block_name": "Power switch",
+   "search_query": "PWR_SW",
+   "part_uuid": "32d09cae88944ea8bd9e366e90edf831",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "EN"
+    }
+   ]
+  },
+  {
+   "designator": "R29",
+   "value": "100k",
+   "block_name": "Power switch",
+   "search_query": "100k",
+   "part_uuid": "c728373c421046ff8f40bf82a79ee519",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "EN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  }
+ ],
+ "external_rm_connect": [
+  {
+   "designator": "U2",
+   "pin_number": "5"
+  }
+ ],
+ "external_connect": [
+  {
+   "designator": "U2",
+   "pin_number": "5",
+   "signal_name": "EN"
+  }
+ ]
+}

@@ -1,0 +1,414 @@
+{
+ "rm_components": [
+  "SW1",
+  "SW2",
+  "SW3",
+  "SW4",
+  "SW5",
+  "SW6"
+ ],
+ "add_components": [
+  {
+   "designator": "SW1",
+   "value": "PWR",
+   "block_name": "Buttons",
+   "search_query": "PWR",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_PWR"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_PWR"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R16",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_PWR"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_PWR"
+    }
+   ]
+  },
+  {
+   "designator": "C13",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_PWR"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "SW2",
+   "value": "UP",
+   "block_name": "Buttons",
+   "search_query": "UP",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_UP"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_UP"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R17",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_UP"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_UP"
+    }
+   ]
+  },
+  {
+   "designator": "C14",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_UP"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "SW3",
+   "value": "LEFT",
+   "block_name": "Buttons",
+   "search_query": "LEFT",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_LEFT"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_LEFT"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R18",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_LEFT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_LEFT"
+    }
+   ]
+  },
+  {
+   "designator": "C15",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_LEFT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "SW4",
+   "value": "OK",
+   "block_name": "Buttons",
+   "search_query": "OK",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_OK"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_OK"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R19",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_OK"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_OK"
+    }
+   ]
+  },
+  {
+   "designator": "C16",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_OK"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "SW5",
+   "value": "RIGHT",
+   "block_name": "Buttons",
+   "search_query": "RIGHT",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_RIGHT"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_RIGHT"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R20",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_RIGHT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_RIGHT"
+    }
+   ]
+  },
+  {
+   "designator": "C17",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_RIGHT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "SW6",
+   "value": "DOWN",
+   "block_name": "Buttons",
+   "search_query": "DOWN",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_DOWN"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_DOWN"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R21",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_DOWN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_DOWN"
+    }
+   ]
+  },
+  {
+   "designator": "C18",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_DOWN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  }
+ ]
+}

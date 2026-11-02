@@ -1,0 +1,23 @@
+{
+ "add_components": [
+  {
+   "designator": "R22",
+   "value": "1M",
+   "block_name": "Battery sense",
+   "search_query": "1M",
+   "part_uuid": "60479e0364284da4a2720dc86428b721",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT_SNS"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  }
+ ]
+}

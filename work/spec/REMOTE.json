@@ -1,0 +1,1496 @@
+{
+ "add_components": [
+  {
+   "designator": "J1",
+   "value": "BAT",
+   "block_name": "Battery",
+   "search_query": "BAT",
+   "part_uuid": "32d09cae88944ea8bd9e366e90edf831",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BAT_IN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "Q1",
+   "value": "AO3401A",
+   "block_name": "Battery",
+   "search_query": "AO3401A",
+   "part_uuid": "f58385f66b144586baef3753ba84f65d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "Q1_G"
+    },
+    {
+     "pin_number": 2,
+     "name": "S",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 3,
+     "name": "D",
+     "signal_name": "BAT_IN"
+    }
+   ]
+  },
+  {
+   "designator": "R1",
+   "value": "100k",
+   "block_name": "Battery",
+   "search_query": "100k",
+   "part_uuid": "c728373c421046ff8f40bf82a79ee519",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "Q1_G"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "U2",
+   "value": "TPS631000",
+   "block_name": "Buck-boost",
+   "search_query": "TPS631000",
+   "part_uuid": "5694c9ba7a84493ba035806c6f65952f",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VOUT",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "LX2",
+     "signal_name": "LX2"
+    },
+    {
+     "pin_number": 3,
+     "name": "LX1",
+     "signal_name": "LX1"
+    },
+    {
+     "pin_number": 4,
+     "name": "VIN",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 5,
+     "name": "EN",
+     "signal_name": "EN"
+    },
+    {
+     "pin_number": 6,
+     "name": "MODE",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 7,
+     "name": "GND",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 8,
+     "name": "FB",
+     "signal_name": "FB"
+    }
+   ]
+  },
+  {
+   "designator": "J6",
+   "value": "PWR_SW",
+   "block_name": "Power switch",
+   "search_query": "PWR_SW",
+   "part_uuid": "32d09cae88944ea8bd9e366e90edf831",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "EN"
+    }
+   ]
+  },
+  {
+   "designator": "R29",
+   "value": "510k",
+   "block_name": "Power switch",
+   "search_query": "510k",
+   "part_uuid": "b754a87e4c3d48f7ad70187a58d64d8e",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "EN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "L1",
+   "value": "1uH",
+   "block_name": "Buck-boost",
+   "search_query": "1uH",
+   "part_uuid": "f831a951b8714a1cac0fb91e28a40e8a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "LX1"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "LX2"
+    }
+   ]
+  },
+  {
+   "designator": "R2",
+   "value": "470k",
+   "block_name": "Buck-boost",
+   "search_query": "470k",
+   "part_uuid": "54b4d7030704445385f5300a6f057f9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "FB"
+    }
+   ]
+  },
+  {
+   "designator": "R3",
+   "value": "82k",
+   "block_name": "Buck-boost",
+   "search_query": "82k",
+   "part_uuid": "e7430550b99b4e31a5c885b865dde147",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "FB"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C1",
+   "value": "10uF",
+   "block_name": "Buck-boost",
+   "search_query": "10uF",
+   "part_uuid": "9f83e90cf78c4f3396a8045b3e521dd5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C2",
+   "value": "100nF",
+   "block_name": "Buck-boost",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C3",
+   "value": "22uF",
+   "block_name": "Buck-boost",
+   "search_query": "22uF",
+   "part_uuid": "b9a0ddbe6f9a4bc4988e166e0381cb70",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C4",
+   "value": "22uF",
+   "block_name": "Buck-boost",
+   "search_query": "22uF",
+   "part_uuid": "b9a0ddbe6f9a4bc4988e166e0381cb70",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C5",
+   "value": "100nF",
+   "block_name": "Buck-boost",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "Q2",
+   "value": "AO3401A",
+   "block_name": "HC-12 switch",
+   "search_query": "AO3401A",
+   "part_uuid": "f58385f66b144586baef3753ba84f65d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "RF_G"
+    },
+    {
+     "pin_number": 2,
+     "name": "S",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 3,
+     "name": "D",
+     "signal_name": "VRF"
+    }
+   ]
+  },
+  {
+   "designator": "R4",
+   "value": "100k",
+   "block_name": "HC-12 switch",
+   "search_query": "100k",
+   "part_uuid": "c728373c421046ff8f40bf82a79ee519",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "RF_G"
+    }
+   ]
+  },
+  {
+   "designator": "R5",
+   "value": "10k",
+   "block_name": "HC-12 switch",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "RF_EN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "RF_G"
+    }
+   ]
+  },
+  {
+   "designator": "C6",
+   "value": "47nF",
+   "block_name": "HC-12 switch",
+   "search_query": "47nF",
+   "part_uuid": "4e4f04b8bec047d98e3a001ec0426079",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "RF_G"
+    }
+   ]
+  },
+  {
+   "designator": "C7",
+   "value": "22uF",
+   "block_name": "HC-12 switch",
+   "search_query": "22uF",
+   "part_uuid": "b9a0ddbe6f9a4bc4988e166e0381cb70",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VRF"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "Q3",
+   "value": "AO3401A",
+   "block_name": "OLED switch",
+   "search_query": "AO3401A",
+   "part_uuid": "f58385f66b144586baef3753ba84f65d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "OLED_G"
+    },
+    {
+     "pin_number": 2,
+     "name": "S",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 3,
+     "name": "D",
+     "signal_name": "VOLED"
+    }
+   ]
+  },
+  {
+   "designator": "R6",
+   "value": "100k",
+   "block_name": "OLED switch",
+   "search_query": "100k",
+   "part_uuid": "c728373c421046ff8f40bf82a79ee519",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "OLED_G"
+    }
+   ]
+  },
+  {
+   "designator": "R7",
+   "value": "10k",
+   "block_name": "OLED switch",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "OLED_EN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "OLED_G"
+    }
+   ]
+  },
+  {
+   "designator": "C8",
+   "value": "47nF",
+   "block_name": "OLED switch",
+   "search_query": "47nF",
+   "part_uuid": "4e4f04b8bec047d98e3a001ec0426079",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "OLED_G"
+    }
+   ]
+  },
+  {
+   "designator": "C9",
+   "value": "10uF",
+   "block_name": "OLED switch",
+   "search_query": "10uF",
+   "part_uuid": "9f83e90cf78c4f3396a8045b3e521dd5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VOLED"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "U1",
+   "value": "ATtiny3226",
+   "block_name": "MCU",
+   "search_query": "ATtiny3226",
+   "part_uuid": "018ea453de8248c5adcf16338bd0025a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "PA4",
+     "signal_name": "BTN_UP"
+    },
+    {
+     "pin_number": 3,
+     "name": "PA5",
+     "signal_name": "BTN_DOWN"
+    },
+    {
+     "pin_number": 4,
+     "name": "PA6",
+     "signal_name": "BTN_PWR"
+    },
+    {
+     "pin_number": 5,
+     "name": "PA7",
+     "signal_name": "VBAT_SNS"
+    },
+    {
+     "pin_number": 6,
+     "name": "PB5",
+     "signal_name": "RF_EN"
+    },
+    {
+     "pin_number": 7,
+     "name": "PB4",
+     "signal_name": "OLED_EN"
+    },
+    {
+     "pin_number": 8,
+     "name": "PB3",
+     "signal_name": "HC_RX"
+    },
+    {
+     "pin_number": 9,
+     "name": "PB2",
+     "signal_name": "HC_TX"
+    },
+    {
+     "pin_number": 10,
+     "name": "PB1",
+     "signal_name": "SDA"
+    },
+    {
+     "pin_number": 11,
+     "name": "PB0",
+     "signal_name": "SCL"
+    },
+    {
+     "pin_number": 12,
+     "name": "PC0",
+     "signal_name": "BTN_LEFT"
+    },
+    {
+     "pin_number": 13,
+     "name": "PC1",
+     "signal_name": "HC_SET"
+    },
+    {
+     "pin_number": 14,
+     "name": "PC2",
+     "signal_name": "BTN_RIGHT"
+    },
+    {
+     "pin_number": 15,
+     "name": "PC3",
+     "signal_name": "BTN_OK"
+    },
+    {
+     "pin_number": 16,
+     "name": "PA0",
+     "signal_name": "UPDI"
+    },
+    {
+     "pin_number": 17,
+     "name": "PA1",
+     "signal_name": "DBG_TX"
+    },
+    {
+     "pin_number": 18,
+     "name": "PA2",
+     "signal_name": "DBG_RX"
+    },
+    {
+     "pin_number": 19,
+     "name": "PA3",
+     "signal_name": "LED_A"
+    },
+    {
+     "pin_number": 20,
+     "name": "GND",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C10",
+   "value": "100nF",
+   "block_name": "MCU",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C11",
+   "value": "22uF",
+   "block_name": "MCU",
+   "search_query": "22uF",
+   "part_uuid": "b9a0ddbe6f9a4bc4988e166e0381cb70",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R8",
+   "value": "330k",
+   "block_name": "Battery sense",
+   "search_query": "330k",
+   "part_uuid": "a0420ebef65b40d0b64f64eaa00e77a1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "VBAT_SNS"
+    }
+   ]
+  },
+  {
+   "designator": "R22",
+   "value": "1M",
+   "block_name": "Battery sense",
+   "search_query": "1M",
+   "part_uuid": "60479e0364284da4a2720dc86428b721",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT_SNS"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "C12",
+   "value": "100nF",
+   "block_name": "Battery sense",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VBAT_SNS"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R15",
+   "value": "1k",
+   "block_name": "Status LED",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "LED_A"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "LED_R"
+    }
+   ]
+  },
+  {
+   "designator": "D1",
+   "value": "LED",
+   "block_name": "Status LED",
+   "search_query": "LED",
+   "part_uuid": "9de34034ae824cef84fe5114d84d3f82",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "LED_R"
+    },
+    {
+     "pin_number": 2,
+     "name": "K",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "SW1",
+   "value": "PWR",
+   "block_name": "Buttons",
+   "search_query": "PWR",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_PWR"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_PWR"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R16",
+   "value": "1k",
+   "block_name": "Buttons",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_PWR"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_PWR"
+    }
+   ]
+  },
+  {
+   "designator": "C13",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_PWR"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R23",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_PWR"
+    }
+   ]
+  },
+  {
+   "designator": "SW2",
+   "value": "UP",
+   "block_name": "Buttons",
+   "search_query": "UP",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_UP"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_UP"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R17",
+   "value": "1k",
+   "block_name": "Buttons",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_UP"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_UP"
+    }
+   ]
+  },
+  {
+   "designator": "C14",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_UP"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R24",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_UP"
+    }
+   ]
+  },
+  {
+   "designator": "SW3",
+   "value": "LEFT",
+   "block_name": "Buttons",
+   "search_query": "LEFT",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_LEFT"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_LEFT"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R18",
+   "value": "1k",
+   "block_name": "Buttons",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_LEFT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_LEFT"
+    }
+   ]
+  },
+  {
+   "designator": "C15",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_LEFT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R25",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_LEFT"
+    }
+   ]
+  },
+  {
+   "designator": "SW4",
+   "value": "OK",
+   "block_name": "Buttons",
+   "search_query": "OK",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_OK"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_OK"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R19",
+   "value": "1k",
+   "block_name": "Buttons",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_OK"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_OK"
+    }
+   ]
+  },
+  {
+   "designator": "C16",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_OK"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R26",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_OK"
+    }
+   ]
+  },
+  {
+   "designator": "SW5",
+   "value": "RIGHT",
+   "block_name": "Buttons",
+   "search_query": "RIGHT",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_RIGHT"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_RIGHT"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R20",
+   "value": "1k",
+   "block_name": "Buttons",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_RIGHT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_RIGHT"
+    }
+   ]
+  },
+  {
+   "designator": "C17",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_RIGHT"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R27",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_RIGHT"
+    }
+   ]
+  },
+  {
+   "designator": "SW6",
+   "value": "DOWN",
+   "block_name": "Buttons",
+   "search_query": "DOWN",
+   "part_uuid": "38630614a58f4650bd5eefe9a5f79d9a",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "BTNS_DOWN"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "BTNS_DOWN"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 4,
+     "name": "D",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R21",
+   "value": "1k",
+   "block_name": "Buttons",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTNS_DOWN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_DOWN"
+    }
+   ]
+  },
+  {
+   "designator": "C18",
+   "value": "100nF",
+   "block_name": "Buttons",
+   "search_query": "100nF",
+   "part_uuid": "a299e4f29fd2469688f76621c3d59c4d",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "BTN_DOWN"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R28",
+   "value": "10k",
+   "block_name": "Buttons",
+   "search_query": "10k",
+   "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "BTN_DOWN"
+    }
+   ]
+  },
+  {
+   "designator": "J2",
+   "value": "HC-12",
+   "block_name": "HC-12",
+   "search_query": "HC-12",
+   "part_uuid": {
+    "uuid": "1d1b976b8289466bb9562f35bbf07810",
+    "libraryUuid": "61d2498a443446bd998f15b4cbbb6009"
+   },
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VRF"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 3,
+     "name": "3",
+     "signal_name": "HC12_RXD"
+    },
+    {
+     "pin_number": 4,
+     "name": "4",
+     "signal_name": "HC12_TXD"
+    },
+    {
+     "pin_number": 5,
+     "name": "5",
+     "signal_name": "HC12_SET"
+    }
+   ]
+  },
+  {
+   "designator": "R9",
+   "value": "1k",
+   "block_name": "HC-12",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "HC_TX"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "HC12_RXD"
+    }
+   ]
+  },
+  {
+   "designator": "R10",
+   "value": "1k",
+   "block_name": "HC-12",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "HC12_TXD"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "HC_RX"
+    }
+   ]
+  },
+  {
+   "designator": "R11",
+   "value": "1k",
+   "block_name": "HC-12",
+   "search_query": "1k",
+   "part_uuid": "2340647df7144fc5a30489ed06518eb5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "HC_SET"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "HC12_SET"
+    }
+   ]
+  },
+  {
+   "designator": "J3",
+   "value": "OLED",
+   "block_name": "OLED",
+   "search_query": "OLED",
+   "part_uuid": "f70eda5267b34d9799800488a27be0c6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "SDA"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "SCL"
+    },
+    {
+     "pin_number": 3,
+     "name": "3",
+     "signal_name": "VOLED"
+    },
+    {
+     "pin_number": 4,
+     "name": "4",
+     "signal_name": "GND"
+    }
+   ]
+  },
+  {
+   "designator": "R12",
+   "value": "4.7k",
+   "block_name": "OLED",
+   "search_query": "4.7k",
+   "part_uuid": "4c1efea8e0884946a0b9422079d22f25",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VOLED"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "SDA"
+    }
+   ]
+  },
+  {
+   "designator": "R13",
+   "value": "4.7k",
+   "block_name": "OLED",
+   "search_query": "4.7k",
+   "part_uuid": "4c1efea8e0884946a0b9422079d22f25",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VOLED"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "SCL"
+    }
+   ]
+  },
+  {
+   "designator": "J4",
+   "value": "UPDI",
+   "block_name": "Prog",
+   "search_query": "UPDI",
+   "part_uuid": "3c2517dd0d3741b3a6071ea8b3f9b7e9",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 3,
+     "name": "3",
+     "signal_name": "UPDI_J"
+    }
+   ]
+  },
+  {
+   "designator": "R14",
+   "value": "470",
+   "block_name": "Prog",
+   "search_query": "470",
+   "part_uuid": "487bc79e6f384e22accab104e6107a75",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "UPDI_J"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "UPDI"
+    }
+   ]
+  },
+  {
+   "designator": "J5",
+   "value": "DEBUG",
+   "block_name": "Prog",
+   "search_query": "DEBUG",
+   "part_uuid": "f70eda5267b34d9799800488a27be0c6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "DBG_TX"
+    },
+    {
+     "pin_number": 3,
+     "name": "3",
+     "signal_name": "DBG_RX"
+    },
+    {
+     "pin_number": 4,
+     "name": "4",
+     "signal_name": "GND"
+    }
+   ]
+  }
+ ]
+}

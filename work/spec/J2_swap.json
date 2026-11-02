@@ -1,0 +1,44 @@
+{
+ "rm_components": [
+  "J2"
+ ],
+ "add_components": [
+  {
+   "designator": "J2",
+   "value": "HC-12",
+   "block_name": "HC-12",
+   "search_query": "HC-12",
+   "part_uuid": {
+    "uuid": "1d1b976b8289466bb9562f35bbf07810",
+    "libraryUuid": "61d2498a443446bd998f15b4cbbb6009"
+   },
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "1",
+     "signal_name": "VRF"
+    },
+    {
+     "pin_number": 2,
+     "name": "2",
+     "signal_name": "GND"
+    },
+    {
+     "pin_number": 3,
+     "name": "3",
+     "signal_name": "HC12_RXD"
+    },
+    {
+     "pin_number": 4,
+     "name": "4",
+     "signal_name": "HC12_TXD"
+    },
+    {
+     "pin_number": 5,
+     "name": "5",
+     "signal_name": "HC12_SET"
+    }
+   ]
+  }
+ ]
+}
