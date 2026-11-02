@@ -16,6 +16,9 @@
 // remote -> OK sends SET_RESUME with it: the panel carries on from exactly where it was. Or OK + RIGHT = RESTART.
 // HC-12 powered only while sending.
 // Debug: J5 (T R G) 115200.
+// #define FIRSTTIME  // uncomment for the FIRST flash after fitting a new HC-12: it sets the module to the panel's
+//                    // channel / power / baud at power-up (needs the battery). Then comment it out and reflash,
+//                    // like the old remote. Without it the module is assumed to be set up already.
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <Wire.h>
@@ -46,7 +49,6 @@ const uint32_t SCREEN_MS = 30000UL;             // sleep after 30 s without a bu
 const uint32_t AUTO_OFF_MS = 5UL * 3600 * 1000; // power off after 5 h asleep
 const uint16_t SEC_MS = 1000;                   // one countdown second. ponytail: trim if it drifts vs a stopwatch
 const uint8_t BEAT_TICKS = 4;                   // sleep heartbeat: 4 x 0.25 s PIT ticks = 20 ms LED blink every 1 s (idle wait: ~45 uA avg)
-const uint16_t NO_BATT_MV = 1500;               // below this J1 is empty: powered from the programmer, radio off
 const float VBAT_K = 1.33f;                     // (330k+1M)/1M. ponytail: trim against a multimeter
 
 DisplaySSD1306_128x64_I2C display(-1);
@@ -154,35 +156,53 @@ void rfOff() {
   PORTB.PIN3CTRL = PORT_ISC_INPUT_DISABLE_gc;  // RX floats while the module is off
 }
 
-// SET held low at power-up = AT mode at 9600 whatever is stored. Puts the module on the panel's settings,
-// so no FIRSTTIME build is needed. Runs once per J6 power-on.
+// One AT command; logs the reply on J5. Returns true if the reply contains "OK".
+bool hcCmd(const char *cmd, uint16_t waitMs = 200) {
+  while (HC.available()) HC.read();
+  HC.print(cmd);
+  char r[64];
+  uint8_t n = 0;
+  for (uint32_t t = millis(); millis() - t < waitMs;)
+    if (HC.available() && n < sizeof r - 1) r[n++] = HC.read();
+  r[n] = 0;
+  DBG.print(cmd);
+  DBG.print(F(" -> "));
+  DBG.println(r);
+  return strstr(r, "OK") != nullptr;
+}
+
+// Puts the HC-12 on the panel's settings. Same sequence as the old remote's FIRSTTIME build, which is what
+// makes brand-new modules work:
+//   cold power-up with SET low (AT mode at 9600 whatever is stored) -> AT, channel, power, baud, AT+RX (logged)
+//   -> SET high WHILE POWERED for 600 ms: the module leaves AT mode and applies the new settings (cutting power
+//      while still in AT mode left new modules on their factory 9600 / CH001)
+//   -> SET low again = AT mode at the CURRENT baud: an "OK" at 2400 proves the baud really changed.
+// Runs at every power-up with a battery (or on the first send).
 bool hcConfig() {
   char ch[8];
   snprintf(ch, sizeof ch, "AT+C%03u", RF_CH);
-  const char *const AT[] = {ch, "AT+P8", "AT+B2400"};  // baud last: it applies on exit
-  bool ok = true;
-  rfOn(true);
-  for (const char *c : AT) {
-    HC.print(c);
-    char r[24];
-    uint8_t n = 0;
-    for (uint32_t t = millis(); millis() - t < 200;)
-      if (HC.available() && n < sizeof r - 1) r[n++] = HC.read();
-    r[n] = 0;
-    DBG.print(c);
-    DBG.print(F(" -> "));
-    DBG.println(r);
-    ok &= strstr(r, "OK") != nullptr;
-  }
+  const char *const AT[] = {"AT", ch, "AT+P8", "AT+B2400"};  // baud last
   rfOff();
-  return ok;
+  delay(1000);  // cold start, like the old FIRSTTIME (it waited 2 s)
+  rfOn(true);
+  bool ok = true;
+  for (const char *c : AT) ok &= hcCmd(c);
+  hcCmd("AT+RX", 400);  // all parameters, for the J5 log
+  digitalWrite(HC_SET, HIGH);  // leave AT mode while powered: settings take effect
+  delay(600);
+  HC.end();
+  HC.begin(2400);
+  digitalWrite(HC_SET, LOW);  // AT mode again, now at the stored baud
+  delay(100);
+  bool at2400 = hcCmd("AT");
+  DBG.println(at2400 ? F("HC-12 OK at 2400") : F("HC-12 NOT at 2400"));
+  digitalWrite(HC_SET, HIGH);
+  delay(200);
+  rfOff();
+  return ok && at2400;
 }
 
 bool send(uint8_t cmd) {
-  if (vbatMv() < NO_BATT_MV) {
-    setMsg("NO BATTERY: radio off");
-    return false;
-  }
   if (!hcReady && !(hcReady = hcConfig())) {  // e.g. batteries added after a power-up on the programmer
     setMsg("HC-12 no reply");
     return false;
@@ -373,15 +393,16 @@ void setup() {
   DBG.print(MYADDRESS);
   DBG.print(F(", reset flags 0x"));
   DBG.println(GPIOR0, HEX);  // megaTinyCore saves RSTFR here and clears it: 1 power-on, 2 brown-out, 0x10 software (a crash), 0x20 UPDI
-  // No battery in J1 = running from the programmer's 3.3 V on J4, which can't feed the HC-12 (~100 mA): the
-  // USB-serial adapter browns out and wedges (Windows error 31). So the radio stays off without a battery.
-  bool batt = vbatMv() >= NO_BATT_MV;
-  hcReady = batt && hcConfig();  // without a battery, send() sets it up later
+#ifdef FIRSTTIME
+  hcReady = hcConfig();  // works on the programmer's USB power too
+#else
+  hcReady = true;  // set up by a FIRSTTIME flash
+#endif
   loadEeprom();  // J6 just closed: the panel's state is unknown
   paused = notSynced = true;
   tick = lastPress = millis();
   ledPulse();
-  snprintf(msg, sizeof msg, batt && !hcReady ? "HC-12 no reply" : "NOT SYNCED: press OK");
+  snprintf(msg, sizeof msg, !hcReady ? "HC-12 no reply" : "NOT SYNCED: press OK");
   oledOn();
 }
 
