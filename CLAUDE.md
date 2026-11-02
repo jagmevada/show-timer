@@ -8,7 +8,13 @@
 - The README on `main` maps every old timer repo.
 
 **2026-10-31: boards RECEIVED, bring-up started.** Test firmware: `firmware/remote/bringup/` (PlatformIO, pymcuprog SerialUPDI on J4; debug J5 115200). Old firmware (old board pin map, HC-12 untested): `timer_remote_code/` (git clone of github.com/jagmevada/timer_remote_code).
-**2026-11-01: real firmware `firmware/remote/` flashed and running on battery** (OLED, countdown, PWR on/off, VBAT). Panel protocol copied byte-for-byte from the deployed receiver `jj-timer-remote/` (branch timer-boilerplate); `firmware/remote/test/test_protocol.cpp` checks it. Pending: panel link test (HC-12 CH011 / 2400 / P8), VBAT_K trim with 2×AAA, sleep current.
+**2026-11-01: real firmware `firmware/remote/` flashed and running on battery** (OLED, countdown, PWR on/off, VBAT). Panel protocol copied byte-for-byte from the deployed receiver `jj-timer-remote/` (branch timer-boilerplate); `firmware/remote/test/test_protocol.cpp` checks it. **2026-11-02: works wirelessly with a REAL deployed panel (address 2, CH012).** Pending: VBAT_K trim with 2×AAA, sleep current, SEC_MS drift check.
+**Panel sync (remote only, the panels can't be reflashed):**
+- The panel never sends its time, so the remote mirrors the panel's state (count, HOLD, NEXT SHOW at 00:00) through sleep AND PWR-off.
+- Only a J6 / battery power loss loses sync: the remote then starts paused, showing "NOT SYNCED".
+- After a panel power-up, make the first command OK+RIGHT: the panel's first command always loads the panel's own saved time.
+- A battery swap / J6 off loses sync, because the onboard VCC caps (~35 µF effective) last only ~2–3 s at ~9 µA. Recovery: freeze and copy (OK → copy the panel time → OK).
+- Considered and SKIPPED by the user (2026-11-02): a 0.22 F supercap + 22 Ω across J4 V–G would hold the chip ~4.5 h through a swap.
 No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2 board into a panel simulator (`src/panel_sim.cpp`, the panel's receive/ACK code copied). **2026-11-01: remote ↔ panel_sim link works (HC-12 commands + ACK).**
 **2026-11-02:** 10 panel+remote sets exist, on addresses 1..10. A panel shows its address as 00:NN at power-up. Flash a remote for set N with `PLATFORMIO_BUILD_FLAGS=-DREMOTE_ADDR=N pio run -t upload`. A remote was flashed for address 2 to test against a real panel.
 Bring-up gotchas: **J6 must be shorted** (else EN low, VCC 0, chip only runs from the programmer). Flash with **only U + G** on J4 when the battery is in (the V pin back-feeds the CP2102 and wedges it).
