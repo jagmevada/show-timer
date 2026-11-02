@@ -46,6 +46,7 @@ const uint32_t SCREEN_MS = 30000UL;             // sleep after 30 s without a bu
 const uint32_t AUTO_OFF_MS = 5UL * 3600 * 1000; // power off after 5 h asleep
 const uint16_t SEC_MS = 1000;                   // one countdown second. ponytail: trim if it drifts vs a stopwatch
 const uint8_t BEAT_TICKS = 4;                   // sleep heartbeat: 4 x 0.25 s PIT ticks = 20 ms LED blink every 1 s (idle wait: ~45 uA avg)
+const uint16_t NO_BATT_MV = 1500;               // below this J1 is empty: powered from the programmer, radio off
 const float VBAT_K = 1.33f;                     // (330k+1M)/1M. ponytail: trim against a multimeter
 
 DisplaySSD1306_128x64_I2C display(-1);
@@ -54,7 +55,7 @@ bool paused, ended, notSynced, screenOn;  // ended = panel reached 00:00 and sho
 uint8_t cursor;
 uint32_t tick, lastPress;
 char msg[22];
-uint32_t ledOn;  // millis() of the power-on LED pulse, 0 = none
+uint32_t ledOn, oledUpAt;  // ledOn: millis() of the power-on LED pulse (0 = none); oledUpAt: OLED power-up  // millis() of the power-on LED pulse, 0 = none
 volatile uint8_t pitTicks;
 volatile bool btnWake;
 
@@ -118,6 +119,7 @@ void oledOn() {
   display.setFixedFont(ssd1306xled_font6x8);
   display.clear();
   screenOn = true;
+  oledUpAt = millis();
   draw();
 }
 
@@ -132,6 +134,7 @@ void oledOff() {
 }
 
 void rfOn(bool atMode) {
+  while (screenOn && millis() - oledUpAt < 100) {}  // never stack the HC-12 inrush on the OLED's (boost mode on 2xAAA)
   PORTB.PIN3CTRL = 0;  // RX input buffer on
   digitalWrite(HC_SET, atMode ? LOW : HIGH);
   HC.begin(atMode ? 9600 : 2400);  // TX idles high before the module boots
@@ -174,6 +177,10 @@ bool hcConfig() {
 }
 
 bool send(uint8_t cmd) {
+  if (vbatMv() < NO_BATT_MV) {
+    setMsg("NO BATTERY: radio off");
+    return false;
+  }
   setMsg(CMD_NAME[cmd], " sending...");
   rfOn(false);
   bool ack = false;
@@ -327,8 +334,13 @@ void sleepCountdown(bool off) {
   ADC0.CTRLA |= ADC_ENABLE_bm;
   tick = millis() - acc / 1000;  // carry the part-second into the awake count
   if (off) ledPulse();  // power-on; a wake from sleep keeps the LED off
+  DBG.print(F("wake, buttons 0x"));
+  DBG.println(readButtons(), HEX);
+  delay(100);  // MCU wakes first, OLED inrush 100 ms later: two smaller load steps (2xAAA = boost mode, slower)
   oledOn();  // shows the panel's current time
-  while (readButtons()) {}  // the wake press only wakes
+  DBG.println(F("oled on"));
+  for (uint32_t t = millis(); readButtons() && millis() - t < 3000;) {}  // the wake press only wakes; a stuck pin can't hang it
+  if (readButtons()) DBG.print(F("STUCK button 0x")), DBG.println(readButtons(), HEX);
   delay(30);
   lastPress = millis();
 }
@@ -350,7 +362,9 @@ void setup() {
   DBG.print(F(", reset flags 0x"));
   DBG.println(RSTCTRL.RSTFR, HEX);
   RSTCTRL.RSTFR = 0x3F;
-  bool hcOk = hcConfig();
+  // No battery in J1 = running from the programmer's 3.3 V on J4, which can't feed the HC-12 (~100 mA): the
+  // USB-serial adapter browns out and wedges (Windows error 31). So the radio stays off without a battery.
+  bool hcOk = vbatMv() < NO_BATT_MV || hcConfig();
   loadEeprom();  // J6 just closed: the panel's state is unknown
   paused = notSynced = true;
   tick = lastPress = millis();
