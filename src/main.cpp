@@ -51,7 +51,9 @@ const float VBAT_K = 1.33f;                     // (330k+1M)/1M. ponytail: trim 
 
 DisplaySSD1306_128x64_I2C display(-1);
 ConfigurableDownCounter counter;
-bool paused, ended, notSynced, screenOn;  // ended = panel reached 00:00 and shows "next show" until RESTART
+bool paused, ended, notSynced, screenOn;
+bool hcReady;  // HC-12 set to the panel's channel / power / baud (done at power-up with a battery, else on first send)
+// ended = panel reached 00:00 and shows "next show" until RESTART
 uint8_t cursor;
 uint32_t tick, lastPress;
 char msg[22];
@@ -181,6 +183,10 @@ bool send(uint8_t cmd) {
     setMsg("NO BATTERY: radio off");
     return false;
   }
+  if (!hcReady && !(hcReady = hcConfig())) {  // e.g. batteries added after a power-up on the programmer
+    setMsg("HC-12 no reply");
+    return false;
+  }
   setMsg(CMD_NAME[cmd], " sending...");
   rfOn(false);
   bool ack = false;
@@ -188,7 +194,12 @@ bool send(uint8_t cmd) {
     uint8_t f[3], n = frame(f, cmd, counter.GetMinutes(), counter.GetSeconds());  // fresh time each try
     HC.write(f, n);                                                                // one burst = one RF packet
     for (uint32_t t = millis(); millis() - t < ACK_MS && !ack;)
-      if (HC.available() && HC.read() == f[0]) ack = true;
+      if (HC.available()) {
+        uint8_t b = HC.read();
+        DBG.print(F("rx 0x"));  // debug: anything heard during the ACK wait (expect the command byte back)
+        DBG.println(b, HEX);
+        if (b == f[0]) ack = true;
+      }
   }
   rfOff();
   setMsg(CMD_NAME[cmd], ack ? ": OK" : ": NO ACK");
@@ -357,19 +368,20 @@ void setup() {
   rfOff();
   oledOff();
   DBG.begin(115200);
-  DBG.print(F("\r\nremote_v2 addr "));
+  DBG.println(F("HELLO"));  // power-on marker on J5
+  DBG.print(F("remote_v2 addr "));
   DBG.print(MYADDRESS);
   DBG.print(F(", reset flags 0x"));
-  DBG.println(RSTCTRL.RSTFR, HEX);
-  RSTCTRL.RSTFR = 0x3F;
+  DBG.println(GPIOR0, HEX);  // megaTinyCore saves RSTFR here and clears it: 1 power-on, 2 brown-out, 0x10 software (a crash), 0x20 UPDI
   // No battery in J1 = running from the programmer's 3.3 V on J4, which can't feed the HC-12 (~100 mA): the
   // USB-serial adapter browns out and wedges (Windows error 31). So the radio stays off without a battery.
-  bool hcOk = vbatMv() < NO_BATT_MV || hcConfig();
+  bool batt = vbatMv() >= NO_BATT_MV;
+  hcReady = batt && hcConfig();  // without a battery, send() sets it up later
   loadEeprom();  // J6 just closed: the panel's state is unknown
   paused = notSynced = true;
   tick = lastPress = millis();
   ledPulse();
-  snprintf(msg, sizeof msg, hcOk ? "NOT SYNCED: press OK" : "HC-12 no reply");
+  snprintf(msg, sizeof msg, batt && !hcReady ? "HC-12 no reply" : "NOT SYNCED: press OK");
   oledOn();
 }
 
@@ -413,6 +425,14 @@ void loop() {
     draw();
   }
   if (ledOn && millis() - ledOn >= 1000) digitalWrite(LED, LOW), ledOn = 0;
+  static uint32_t alive;  // J5 heartbeat while awake: checks the debug link without a power cycle
+  if (millis() - alive >= 1000) {
+    alive = millis();
+    char a[24];
+    snprintf(a, sizeof a, "alive %02u:%02u %s", counter.GetMinutes(), counter.GetSeconds(),
+             ended ? "end" : paused ? "hold" : "run");
+    DBG.println(a);
+  }
   if (millis() - lastPress > SCREEN_MS) sleepCountdown(false);
 
   set_sleep_mode(SLEEP_MODE_IDLE);  // the millis tick wakes it every ms
