@@ -17,6 +17,15 @@
 - Considered and SKIPPED by the user (2026-11-02): a 0.22 F supercap + 22 Ω across J4 V–G would hold the chip ~4.5 h through a swap.
 No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2 board into a panel simulator (`src/panel_sim.cpp`, the panel's receive/ACK code copied). **2026-11-01: remote ↔ panel_sim link works (HC-12 commands + ACK).**
 **2026-11-02:** 10 panel+remote sets exist, on addresses 1..10. A panel shows its address as 00:NN at power-up. Flash a remote for set N with `PLATFORMIO_BUILD_FLAGS=-DREMOTE_ADDR=N pio run -t upload`. A remote was flashed for address 2 to test against a real panel.
+**HC-12 modules (2026-11-03), important:**
+- The 4 NEW HC-12s (same AT+RX/AT+V as the old ones: FU3, 2400, C012, +20 dBm, v2.6) are an RF-incompatible batch: they link new<->new only, never with the old/genuine modules in the panels.
+- Result: 8 remotes work, all with old modules. 2 boards are waiting for compatible modules.
+- Per-remote flashing for set N:
+  1. `PLATFORMIO_BUILD_FLAGS="-DREMOTE_ADDR=N -DFIRSTTIME" pio run -t upload` sets the HC-12 to channel 10+N.
+  2. Power-cycle.
+  3. `PLATFORMIO_BUILD_FLAGS=-DREMOTE_ADDR=N pio run -t upload` (final).
+- Diagnostic tools: J5 log (115200), env `radiotest` (board-to-board link test), `hc12_firsttime/` (Arduino IDE sketch).
+- Panel (branch `panel`): build with `-DMYADDRESS=N [-DFIRSTTIME]`. The deployed address-2 panel firmware is backed up in `firmware/panel/backups/`.
 Bring-up gotchas: **J6 must be shorted** (else EN low, VCC 0, chip only runs from the programmer). Flash with **only U + G** on J4 when the battery is in (the V pin back-feeds the CP2102 and wedges it).
 **Silk text (BAT, UPDI, DBG, OLED, OLED-module outline 27.3×27.8 mm; bottom HC-12, website, battery + / −) was added after that trial.** Order from `release/` (FINAL) so the board has it. Copper is identical.
 
