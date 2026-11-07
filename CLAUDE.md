@@ -40,6 +40,7 @@ Bring-up gotchas: **J6 must be shorted** (else EN low, VCC 0, chip only runs fro
 | Old remote failure analysis (why v2 exists) | `docs/old_remote/DIAGNOSIS.md` |
 | User preferences / rules / EasyEDA API notes | `docs/WORKING_WITH_JAGME.md`, `docs/PCB_DESIGN_RULES.md`, `docs/EASYEDA_API_NOTES.md`, `.claude/skills/pcb-design-rules/` |
 | Gerber silk renders (mirror check) | `docs/images/` |
+| 3D assembly for case design (2026-11-07): all 66 parts incl. DNP + HC-12 + approximate OLED (no vendor CAD; knobs at the top of the script). OLED PCB 1.2 mm above the board (user's build), J3 = bare pins | `cad/remote_v2_assembly.step` ← `cad/make_assembly.py` (cadquery-ocp) from `cad/remote_v2_easyeda.step` (EasyEDA export) |
 | Intermediate backups / early planning notes | `archive/` |
 | User's old Eagle design (git clone, don't edit) | `timer_remote/` |
 

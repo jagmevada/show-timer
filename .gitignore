@@ -3,3 +3,5 @@
 /timer_remote/
 /timer_remote_code/
 .pio/
+# SolidWorks temporary lock files (~$name.SLDPRT / .SLDASM while a file is open)
+~$*
