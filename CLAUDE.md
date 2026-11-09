@@ -20,12 +20,27 @@ No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2
 **HC-12 modules (2026-11-03), important:**
 - The 4 NEW HC-12s (same AT+RX/AT+V as the old ones: FU3, 2400, C012, +20 dBm, v2.6) are an RF-incompatible batch: they link new<->new only, never with the old/genuine modules in the panels.
 - Result: 8 remotes work, all with old modules. 2 boards are waiting for compatible modules.
-- Per-remote flashing for set N:
-  1. `PLATFORMIO_BUILD_FLAGS="-DREMOTE_ADDR=N -DFIRSTTIME" pio run -t upload` sets the HC-12 to channel 10+N.
-  2. Power-cycle.
-  3. `PLATFORMIO_BUILD_FLAGS=-DREMOTE_ADDR=N pio run -t upload` (final).
+- Per-remote flashing (2026-11-09: address menu replaces the FIRSTTIME two-step):
+  1. Build once: `pio run` (default address 1; `-DREMOTE_ADDR=N` changes the default).
+  2. Flash each remote: `pymcuprog write --erase --verify -t uart -u COM4 -d attiny3226 -c 230400 -f .piouild\ATtiny3226irmware.hex`.
+     - Use the working CP2102; its COM number depends on the USB port.
+     - Batteries + J6, U + G only.
+  3. Set the address on the remote: UP + DOWN 3 s, pick 1..15, OK. This saves it to EEPROM and sets up the HC-12 on channel 10+N; it survives power cycles.
+     A flash erases the EEPROM, so open the menu and press OK once after every flash.
 - Diagnostic tools: J5 log (115200), env `radiotest` (board-to-board link test), `hc12_firsttime/` (Arduino IDE sketch).
 - Panel (branch `panel`): build with `-DMYADDRESS=N [-DFIRSTTIME]`. The deployed address-2 panel firmware is backed up in `firmware/panel/backups/`.
+**TODO (open items, 2026-11-09):**
+- [ ] **Board with `HC12 no reply AT`** (flashed 2026-11-09 via COM4; it fails in the address menu): the HC-12 does not answer the first AT.
+  - Measure in the ~3 s "setting HC-12..." window: pad1 VCC ~3.3 V? pad5 SET ~0 V? RXD/TXD alive? Check R9/R10/R11 and the Q2 joints.
+  - Or swap in a known-good module (fault moves with the module = bad module, else the board).
+  - Confirm it runs on batteries, not programmer V.
+- [ ] **Address menu (UP+DOWN 3 s)**: confirm on hardware that after setting an address, OK at that panel gives `HOLD: OK`.
+- [ ] **2 boards need compatible HC-12s.** The new batch is RF-incompatible with the panels' genuine modules.
+- [ ] **Panel address 2**: make sure its original (old) HC-12 is back. It had a new module during the 2026-11-03 test. Backup firmware: `firmware/panel/backups/`.
+- [ ] **1 remote freezes after waking from sleep** (9 of 10 OK): catch it on the J5 log (CH340 on J5, 115200); the last line shows the step.
+- [ ] **Programmer COM3 (CP2102 serial 0001) is broken**: no TX->RX echo (resistor/diode/U lead or the adapter). Use the other CP2102 (COM4/COM9, numbered by USB port).
+- [ ] Decide: set the EESAVE fuse so a reflash keeps the address + saved time (one pymcuprog fuse write per remote).
+- [ ] Still pending from bring-up: VBAT_K trim with 2xAAA, sleep current, SEC_MS drift vs the panel.
 Bring-up gotchas: **J6 must be shorted** (else EN low, VCC 0, chip only runs from the programmer). Flash with **only U + G** on J4 when the battery is in (the V pin back-feeds the CP2102 and wedges it).
 **Silk text (BAT, UPDI, DBG, OLED, OLED-module outline 27.3×27.8 mm; bottom HC-12, website, battery + / −) was added after that trial.** Order from `release/` (FINAL) so the board has it. Copper is identical.
 
