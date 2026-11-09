@@ -57,6 +57,7 @@ DisplaySSD1306_128x64_I2C display(-1);
 ConfigurableDownCounter counter;
 bool paused, ended, notSynced, screenOn;
 uint8_t addr;  // which panel: set from the buttons (UP + DOWN 3 s), kept in EEPROM
+char hcInfo[22] = "HC12 no reply AT";  // result of the last HC-12 setup, for the screen
 bool hcReady;  // HC-12 set to the panel's channel / power / baud (done at power-up with a battery, else on first send)
 // ended = panel reached 00:00 and shows "next show" until RESTART
 uint8_t cursor;
@@ -189,7 +190,11 @@ bool hcConfig() {
   delay(1000);  // cold start, like the old FIRSTTIME (it waited 2 s)
   rfOn(true);
   bool ok = true;
-  for (const char *c : AT) ok &= hcCmd(c);
+  for (const char *c : AT)
+    if (!hcCmd(c) && ok) {  // the first command that got no "OK" tells where it stopped
+      ok = false;
+      snprintf(hcInfo, sizeof hcInfo, "HC12 no reply %s", c);
+    }
   hcCmd("AT+RX", 400);  // all parameters, for the J5 log
   hcCmd("AT+V", 300);   // firmware version, for the J5 log
   digitalWrite(HC_SET, HIGH);  // leave AT mode while powered: settings take effect
@@ -203,12 +208,14 @@ bool hcConfig() {
   digitalWrite(HC_SET, HIGH);
   delay(200);
   rfOff();
+  if (ok && !at2400) snprintf(hcInfo, sizeof hcInfo, "HC12 not at 2400");
+  if (ok && at2400) snprintf(hcInfo, sizeof hcInfo, "HC-12 OK");
   return ok && at2400;
 }
 
 bool send(uint8_t cmd) {
   if (!hcReady && !(hcReady = hcConfig())) {  // e.g. batteries added after a power-up on the programmer
-    setMsg("HC-12 no reply");
+    setMsg(hcInfo);
     return false;
   }
   setMsg(CMD_NAME[cmd], " sending...");
@@ -428,7 +435,7 @@ void configAddress() {
         else snprintf(msg, sizeof msg, "ADDRESS %u OK", a);
       } else {
         addr = old;
-        snprintf(msg, sizeof msg, "HC-12 no reply");
+        snprintf(msg, sizeof msg, "%s", hcInfo);
       }
       break;
     }
@@ -468,7 +475,7 @@ void setup() {
   paused = notSynced = true;
   tick = lastPress = millis();
   ledPulse();
-  snprintf(msg, sizeof msg, !hcReady ? "HC-12 no reply" : "NOT SYNCED: press OK");
+  snprintf(msg, sizeof msg, !hcReady ? hcInfo : "NOT SYNCED: press OK");
   oledOn();
 }
 
