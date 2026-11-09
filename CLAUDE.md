@@ -22,7 +22,7 @@ No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2
 - Result: 8 remotes work, all with old modules. 2 boards are waiting for compatible modules.
 - Per-remote flashing (2026-11-09: address menu replaces the FIRSTTIME two-step):
   1. Build once: `pio run` (default address 1; `-DREMOTE_ADDR=N` changes the default).
-  2. Flash each remote: `pymcuprog write --erase --verify -t uart -u COM4 -d attiny3226 -c 230400 -f .piouild\ATtiny3226irmware.hex`.
+  2. Flash each remote: `pymcuprog write --erase --verify -t uart -u COM4 -d attiny3226 -c 230400 -f .pio\build\ATtiny3226\firmware.hex`.
      - Use the working CP2102; its COM number depends on the USB port.
      - Batteries + J6, U + G only.
   3. Set the address on the remote: UP + DOWN 3 s, pick 1..15, OK. This saves it to EEPROM and sets up the HC-12 on channel 10+N; it survives power cycles.
