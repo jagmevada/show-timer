@@ -5,14 +5,15 @@
 #include <stdint.h>
 
 enum { CMD_RESTART = 0, CMD_RESUME = 1, CMD_HOLD = 2, CMD_SET_RESUME = 3, CMD_STATUS = 4, CMD_NEWDATA = 5, CMD_EEPROM = 6 };
-// Per set (10 panel+remote sets, 1..10): the panel shows its address as 00:NN at power-up. Flash a remote for it with
-//   PLATFORMIO_BUILD_FLAGS=-DREMOTE_ADDR=2 pio run -t upload      (no flag = 1; same for -e panel_sim)
+// Address = which panel (1..15; 10 sets use 1..10). The panel shows its address as 00:NN at power-up.
+// The remote's address is set from its buttons (UP + DOWN 3 s) and kept in EEPROM; DEFAULT_ADDR is used while the
+// EEPROM is blank (every flash erases it): -DREMOTE_ADDR=N at build time, else 1. panel_sim / radiotest use it as is.
 #ifndef REMOTE_ADDR
 #define REMOTE_ADDR 1
 #endif
 static_assert(REMOTE_ADDR >= 1 && REMOTE_ADDR <= 15, "address is 4 bits");
-const uint8_t MYADDRESS = REMOTE_ADDR;
-const uint8_t RF_CH = 10 + MYADDRESS;  // HC-12 channel, as the panel and old remote derive it (address 5 -> 015)
+const uint8_t DEFAULT_ADDR = REMOTE_ADDR;
+inline uint8_t rfChannel(uint8_t addr) { return 10 + addr; }  // HC-12 channel, as the panel derives it (5 -> 015)
 
 inline uint8_t parity8(uint8_t d) {
   d ^= d >> 4;
@@ -22,8 +23,8 @@ inline uint8_t parity8(uint8_t d) {
 }
 
 // Command byte: bit 0 = even-parity bit, bits 1-4 = address, bits 5-7 = command.
-inline uint8_t cmdByte(uint8_t cmd) {
-  uint8_t b = (uint8_t)(cmd << 5) | (uint8_t)(MYADDRESS << 1);
+inline uint8_t cmdByte(uint8_t cmd, uint8_t addr) {
+  uint8_t b = (uint8_t)(cmd << 5) | (uint8_t)(addr << 1);
   return b | parity8(b);
 }
 
@@ -31,8 +32,8 @@ inline uint8_t cmdByte(uint8_t cmd) {
 inline uint8_t payByte(uint8_t v) { return v | (uint8_t)(!parity8(v) << 7); }
 
 // SET_RESUME and EEPROM carry minutes then seconds. Returns the frame length (1 or 3).
-inline uint8_t frame(uint8_t *buf, uint8_t cmd, uint8_t minutes, uint8_t seconds) {
-  buf[0] = cmdByte(cmd);
+inline uint8_t frame(uint8_t *buf, uint8_t cmd, uint8_t addr, uint8_t minutes, uint8_t seconds) {
+  buf[0] = cmdByte(cmd, addr);
   if (cmd != CMD_SET_RESUME && cmd != CMD_EEPROM) return 1;
   buf[1] = payByte(minutes);
   buf[2] = payByte(seconds);

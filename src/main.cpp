@@ -3,6 +3,7 @@
 //   OK = HOLD (running) / SET_RESUME with the shown time (paused)
 //   OK + RIGHT held = RESTART from the saved time;  OK + RIGHT + LEFT held = save the shown time (EEPROM cmd)
 //   paused: LEFT/RIGHT pick a digit, UP/DOWN change it
+//   UP + DOWN held 3 s = address menu: UP/DOWN 1..15, OK = save + set up the HC-12 on that channel, PWR = exit
 // The panel never reports its time, so the remote MIRRORS it: same countdown, HOLD, and "next show" at 00:00
 // (the panel then waits for RESTART only). The mirror keeps running through sleep AND off:
 //   PWR short or 30 s idle = sleep: screen off, MCU power-down, count runs on the RTC PIT, LED blinks every 1 s;
@@ -41,6 +42,7 @@ enum { PWR, UP, DOWN, LEFT, RIGHT, OK };
 const uint8_t BTN[] = {PIN_PA6, PIN_PA4, PIN_PA5, PIN_PC0, PIN_PC2, PIN_PC3};
 
 const uint8_t EEPROMADDR = 8;                   // minutes, seconds: same place as the old remote
+const uint8_t ADDR_EE = EEPROMADDR + 2;         // remote address 1..15 (blank = DEFAULT_ADDR)
 const uint16_t HC_BOOT_MS = 100;                // HC-12 power-up to ready. ponytail: raise if the first frame is lost
 const uint16_t ACK_MS = 1500;                   // panel echoes from its display loop, up to ~1 s late
 const uint8_t TRIES = 3;
@@ -54,6 +56,7 @@ const float VBAT_K = 1.33f;                     // (330k+1M)/1M. ponytail: trim 
 DisplaySSD1306_128x64_I2C display(-1);
 ConfigurableDownCounter counter;
 bool paused, ended, notSynced, screenOn;
+uint8_t addr;  // which panel: set from the buttons (UP + DOWN 3 s), kept in EEPROM
 bool hcReady;  // HC-12 set to the panel's channel / power / baud (done at power-up with a battery, else on first send)
 // ended = panel reached 00:00 and shows "next show" until RESTART
 uint8_t cursor;
@@ -106,7 +109,7 @@ void draw() {
   int pct = constrain(((int)mv - 2000) / 10, 0, 100);
   uint8_t em, es;
   savedTime(em, es);
-  snprintf(s, sizeof s, "%u.%02uV %3d%% E%02u:%02u A%u ", mv / 1000, mv % 1000 / 10, pct, em, es, MYADDRESS);
+  snprintf(s, sizeof s, "%u.%02uV %3d%% E%02u:%02u A%u ", mv / 1000, mv % 1000 / 10, pct, em, es, addr);
   display.printFixed(0, 0, s, STYLE_NORMAL);
 }
 
@@ -180,7 +183,7 @@ bool hcCmd(const char *cmd, uint16_t waitMs = 200) {
 // Runs at every power-up with a battery (or on the first send).
 bool hcConfig() {
   char ch[8];
-  snprintf(ch, sizeof ch, "AT+C%03u", RF_CH);
+  snprintf(ch, sizeof ch, "AT+C%03u", rfChannel(addr));
   const char *const AT[] = {"AT", ch, "AT+P8", "AT+B2400"};  // baud last
   rfOff();
   delay(1000);  // cold start, like the old FIRSTTIME (it waited 2 s)
@@ -212,7 +215,7 @@ bool send(uint8_t cmd) {
   rfOn(false);
   bool ack = false;
   for (uint8_t i = 0; i < TRIES && !ack; i++) {
-    uint8_t f[3], n = frame(f, cmd, counter.GetMinutes(), counter.GetSeconds());  // fresh time each try
+    uint8_t f[3], n = frame(f, cmd, addr, counter.GetMinutes(), counter.GetSeconds());  // fresh time each try
     HC.write(f, n);                                                                // one burst = one RF packet
     for (uint32_t t = millis(); millis() - t < ACK_MS && !ack;)
       if (HC.available()) {
@@ -377,6 +380,66 @@ void sleepCountdown(bool off) {
   lastPress = millis();
 }
 
+// Address menu screen: title + hint in the yellow band, the address in big blue digits.
+void drawAddr(uint8_t a, const char *hint) {
+  char s[22];
+  display.clear();
+  display.setFixedFont(ssd1306xled_font6x8);
+  display.printFixed(0, 0, "REMOTE ADDRESS (1-15)", STYLE_NORMAL);
+  snprintf(s, sizeof s, "%-21s", hint);
+  display.printFixed(0, 8, s, STYLE_NORMAL);
+  display.drawBitmap1(35, 16, BIG_W, BIG_H, BIG_DIGITS[a / 10]);
+  display.drawBitmap1(65, 16, BIG_W, BIG_H, BIG_DIGITS[a % 10]);
+}
+
+// Address menu (UP + DOWN held 3 s). UP/DOWN pick 1..15, OK saves it and puts the HC-12 on the new channel with the
+// old FIRSTTIME setup (so OK without a change also sets up a newly fitted module). PWR or 30 s idle: no change.
+void configAddress() {
+  const char *const HINT = "UP/DN OK=set PWR=exit";
+  uint8_t a = addr, last = 0;
+  drawAddr(a, HINT);
+  while (readButtons()) {}  // let go of UP + DOWN first
+  delay(30);
+  for (uint32_t t = millis(); millis() - t < 30000;) {
+    uint8_t now = readButtons(), down = now & ~last;
+    if (now != last) delay(25), t = millis();  // any button restarts the 30 s
+    last = now;
+    if (down & (bit(UP) | bit(DOWN))) {
+      a = (down & bit(UP)) ? a % 15 + 1 : (a + 13) % 15 + 1;  // 1..15, wraps
+      drawAddr(a, HINT);
+    }
+    if (down & bit(PWR)) break;
+    if (down & bit(OK)) {
+      drawAddr(a, "setting HC-12...");
+      uint8_t old = addr;
+      addr = a;
+      hcReady = hcConfig();
+      if (hcReady) {
+        EEPROM.update(ADDR_EE, a);
+        DBG.print(F("address set to "));
+        DBG.println(a);
+        if (a != old) {  // a different panel: its state is unknown
+          loadEeprom();
+          paused = notSynced = true;
+          ended = false;
+          cursor = 0;
+        }
+        if (notSynced) snprintf(msg, sizeof msg, "NOT SYNCED: press OK");
+        else snprintf(msg, sizeof msg, "ADDRESS %u OK", a);
+      } else {
+        addr = old;
+        snprintf(msg, sizeof msg, "HC-12 no reply");
+      }
+      break;
+    }
+  }
+  while (readButtons()) {}
+  delay(30);
+  display.clear();
+  tick = lastPress = millis();
+  draw();
+}
+
 void setup() {
   digitalWrite(RF_EN, HIGH);
   digitalWrite(OLED_EN, HIGH);
@@ -390,8 +453,10 @@ void setup() {
   oledOff();
   DBG.begin(115200);
   DBG.println(F("HELLO"));  // power-on marker on J5
+  addr = EEPROM.read(ADDR_EE);
+  if (addr < 1 || addr > 15) addr = DEFAULT_ADDR;
   DBG.print(F("remote_v2 addr "));
-  DBG.print(MYADDRESS);
+  DBG.print(addr);
   DBG.print(F(", reset flags 0x"));
   DBG.println(GPIOR0, HEX);  // megaTinyCore saves RSTFR here and clears it: 1 power-on, 2 brown-out, 0x10 software (a crash), 0x20 UPDI
 #ifdef FIRSTTIME
@@ -430,13 +495,26 @@ void loop() {
     return;
   }
 
+  static uint32_t comboAt;  // UP + DOWN held 3 s = address menu
+  if ((now & (bit(UP) | bit(DOWN))) == (bit(UP) | bit(DOWN))) {
+    if (!comboAt) comboAt = millis();
+    if (millis() - comboAt >= 3000) {
+      comboAt = 0;
+      configAddress();
+      last = readButtons();
+      return;
+    }
+  } else {
+    comboAt = 0;
+  }
+
   down &= ~bit(PWR);
   if (down & bit(OK)) okPressed(now);
   if (paused && down) {
     if ((down & bit(LEFT)) && cursor > 0) cursor--;
     if ((down & bit(RIGHT)) && cursor < 3) cursor++;
-    if (down & bit(UP)) editDigit(true);
-    if (down & bit(DOWN)) editDigit(false);
+    if ((down & bit(UP)) && !(now & bit(DOWN))) editDigit(true);  // UP + DOWN together = address menu
+    if ((down & bit(DOWN)) && !(now & bit(UP))) editDigit(false);
     draw();
   }
 

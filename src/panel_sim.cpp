@@ -33,7 +33,7 @@ typedef union {
 DisplaySSD1306_128x64_I2C display(-1);
 volatile uint8_t rcmd, rmsb, rlsb;
 volatile bool processnewdata;
-int x = MYADDRESS;
+int x = DEFAULT_ADDR;
 bool connected, statestop, staterestart = true, ended;
 uint16_t frames;
 uint8_t raw[3];
@@ -72,7 +72,7 @@ void recieveprocess(uint8_t b, uint8_t msb, uint8_t lsb) {
   frames++;
   if (parity8(b) != 0) {
     snprintf(line, sizeof line, "PARITY FAIL");
-  } else if (d.fields.address != MYADDRESS) {
+  } else if (d.fields.address != DEFAULT_ADDR) {
     snprintf(line, sizeof line, "WRONG ADDR %u", d.fields.address);
   } else {
     uint8_t c = d.fields.command;
@@ -135,7 +135,7 @@ void setup() {
   digitalWrite(RF_EN, LOW);
   delay(300);
   char ch[8];
-  snprintf(ch, sizeof ch, "AT+C%03u", RF_CH);
+  snprintf(ch, sizeof ch, "AT+C%03u", rfChannel(DEFAULT_ADDR));
   const char *const AT[] = {ch, "AT+P8", "AT+B2400"};  // baud last
   bool ok = true;
   for (const char *c : AT) {

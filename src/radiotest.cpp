@@ -66,7 +66,7 @@ void setup() {
   digitalWrite(RF_EN, LOW);
   delay(300);
   char ch[8];
-  snprintf(ch, sizeof ch, "AT+C%03u", RF_CH);
+  snprintf(ch, sizeof ch, "AT+C%03u", rfChannel(DEFAULT_ADDR));
   at("AT");
   at(ch);
   at("AT+P8");
