@@ -24,7 +24,7 @@ No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2
   - With both modules on the same settings, old<->new links 3/3 at every air rate (15k, 58k, 236k, 250k) EXCEPT FU3 at 1200/2400 = 5k, the panels' rate (narrowest receive filter): 0. FU4 (0.5k) is marginal.
   - So the new crystal is off by some tens of kHz. No AT setting fixes it: all FU x baud, channels 1..100 and the C011/C013 neighbours give nothing at 5k.
   - Fix options: a module with a gold metal crystal (ask the seller for a photo), or 2x 22 pF from the crystal pins to GND on a new module (verify with `hc12_sweep.py ... live`).
-- Result: 9 remotes work, all with old modules (2026-11-13: the last gold-crystal module went on a pending board). 1 board is waiting for a compatible module.
+- Result (2026-11-13): **all 10 remotes work**, all with old (gold-crystal) HC-12s and firmware af4e8f3. Range of the remote with the reworked module (RXD/TXD solder bridge, first-AT ERROR) is still to be checked in the field: 10x OK from the farthest spot vs a known-good remote.
 - **First AT after power-up often answers `ERROR`** (a stray byte at power-up, 10 of 12 cold starts on one module). That was the `HC12 no reply AT` / failed address menu. Fixed 2026-11-13 (af4e8f3): `hcConfig()` sends a throwaway AT first.
 - Per-remote flashing (2026-11-09: address menu replaces the FIRSTTIME two-step):
   1. Build once: `pio run` (default address 1; `-DREMOTE_ADDR=N` changes the default).
@@ -41,7 +41,8 @@ No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2
 - [x] ~~Board with `HC12 no reply AT`~~: the first-AT `ERROR`, fixed in af4e8f3 (see above). Verified on hardware 2026-11-13: address 10 then 2, `HC-12 OK at 2400`.
 - [x] ~~Address menu end-to-end~~: verified 2026-11-13 against the bench panel (address 2).
 - [ ] **Reflash the other remotes with af4e8f3** (the throwaway-AT fix), else their address menu can still fail.
-- [ ] **1 board needs a compatible HC-12** (gold metal crystal), or try 2x 22 pF on a new module's crystal pins and check with `hc12_sweep.py ... live`.
+- [ ] Field range check of the remote with the reworked old module (see the result line above).
+- [ ] Spare new (black-crystal) HC-12s only work with each other: for future remotes buy gold-crystal modules, or try 2x 22 pF on the crystal pins and check with `hc12_sweep.py ... live`.
 - [ ] A loose UPDI wire hangs the remote's ATtiny (J5 goes silent, UPDI reset brings it back). So does soldering with the batteries in.
 - [ ] **Panel address 2**: make sure its original (old) HC-12 is back. It had a new module during the 2026-11-03 test. Backup firmware: `firmware/panel/backups/`.
 - [ ] **1 remote freezes after waking from sleep** (9 of 10 OK): catch it on the J5 log (CH340 on J5, 115200); the last line shows the step.
