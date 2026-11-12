@@ -4,7 +4,10 @@ Both boards run the bridge firmware (src/bridge.cpp): the panel (OLD module, `pi
 mon port) and a remote (NEW module, `pio run -e bridge`, PC on J5). The OLD module stays on the field settings
 (FU3, 2400, C012 = address 2). The NEW module is stepped through modes, bauds and channels; for each setting one
 packet goes new->old and one old->new.
-  python hc12_sweep.py NEWPORT OLDPORT [query|modes|channels|all]
+  python hc12_sweep.py NEWPORT OLDPORT [query|modes|channels|all|live[:seconds]]
+  live = both on the field settings, one packet each way per second (for tuning the new module's crystal).
+2026-11-13 result: old and new link at every air rate except FU3 at 1200/2400 (5k air, narrowest filter):
+the new batch's crystal is off frequency.
 Needs pyserial (the PlatformIO python has it: ~/.platformio/penv/Scripts/python.exe).
 """
 import sys
@@ -95,6 +98,13 @@ def main():
         print("== NEW: channels 1..100, FU3 2400 (frequency offset?)")
         for ch in range(1, 101):
             test(3, 2400, ch)
+    if what.startswith("live"):  # live[:seconds]: both on the field settings, one packet each way per second
+        new.setup(*FIELD)
+        t0 = time.time()
+        while time.time() - t0 < float(what.partition(":")[2] or 120):
+            n2o, o2n = send(new, old), send(old, new)
+            print(f"{time.time() - t0:5.0f}s  new->old {'OK ' if n2o == MSG else '-- '}  old->new "
+                  f"{'OK ' if o2n == MSG else '-- '} {n2o!r} {o2n!r}", flush=True)
     print("\nHITS (anything received):", *(hits or ["none"]), sep="\n  ")
 
 

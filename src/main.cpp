@@ -189,6 +189,7 @@ bool hcConfig() {
   rfOff();
   delay(1000);  // cold start, like the old FIRSTTIME (it waited 2 s)
   rfOn(true);
+  hcCmd("AT");  // throwaway: some modules take a stray byte at power-up and answer the first command "ERROR"
   bool ok = true;
   for (const char *c : AT)
     if (!hcCmd(c) && ok) {  // the first command that got no "OK" tells where it stopped
