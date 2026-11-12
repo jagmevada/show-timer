@@ -19,7 +19,13 @@ No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2
 **2026-11-02:** 10 panel+remote sets exist, on addresses 1..10. A panel shows its address as 00:NN at power-up. Flash a remote for set N with `PLATFORMIO_BUILD_FLAGS=-DREMOTE_ADDR=N pio run -t upload`. A remote was flashed for address 2 to test against a real panel.
 **HC-12 modules (2026-11-03), important:**
 - The 4 NEW HC-12s (same AT+RX/AT+V as the old ones: FU3, 2400, C012, +20 dBm, v2.6) are an RF-incompatible batch: they link new<->new only, never with the old/genuine modules in the panels.
-- Result: 8 remotes work, all with old modules. 2 boards are waiting for compatible modules.
+- **Cause found 2026-11-13 (bench: `pio run -e bridge` / `-e bridge_panel` + `tools/hc12_sweep.py`): the crystal.**
+  - Both batches use an STM8 MCU and the same firmware. The only physical difference is the 30 MHz crystal: OLD = gold metal can, NEW = black plastic.
+  - With both modules on the same settings, old<->new links 3/3 at every air rate (15k, 58k, 236k, 250k) EXCEPT FU3 at 1200/2400 = 5k, the panels' rate (narrowest receive filter): 0. FU4 (0.5k) is marginal.
+  - So the new crystal is off by some tens of kHz. No AT setting fixes it: all FU x baud, channels 1..100 and the C011/C013 neighbours give nothing at 5k.
+  - Fix options: a module with a gold metal crystal (ask the seller for a photo), or 2x 22 pF from the crystal pins to GND on a new module (verify with `hc12_sweep.py ... live`).
+- Result: 9 remotes work, all with old modules (2026-11-13: the last gold-crystal module went on a pending board). 1 board is waiting for a compatible module.
+- **First AT after power-up often answers `ERROR`** (a stray byte at power-up, 10 of 12 cold starts on one module). That was the `HC12 no reply AT` / failed address menu. Fixed 2026-11-13 (af4e8f3): `hcConfig()` sends a throwaway AT first.
 - Per-remote flashing (2026-11-09: address menu replaces the FIRSTTIME two-step):
   1. Build once: `pio run` (default address 1; `-DREMOTE_ADDR=N` changes the default).
   2. Flash each remote: `pymcuprog write --erase --verify -t uart -u COM4 -d attiny3226 -c 230400 -f .pio\build\ATtiny3226\firmware.hex`.
@@ -28,14 +34,15 @@ No panel on the bench: `pio run -e panel_sim -t upload` turns a second remote_v2
   3. Set the address on the remote: UP + DOWN 3 s, pick 1..15, OK. This saves it to EEPROM and sets up the HC-12 on channel 10+N; it survives power cycles.
      A flash erases the EEPROM, so open the menu and press OK once after every flash.
 - Diagnostic tools: J5 log (115200), env `radiotest` (board-to-board link test), `hc12_firsttime/` (Arduino IDE sketch).
+  - HC-12 bench: env `bridge` on a remote (PC on J5) and `bridge_panel` on the bench panel (PC on its mon port, PB2/PB3). `tools/hc12_sweep.py NEWPORT OLDPORT [query|modes|channels|live]` (PlatformIO python).
+  - The bench panel's original firmware: `firmware/panel/backups/panel_bench_*_2026-11-13.hex`. After restoring the flash, rewrite EEPROM bytes 8-9 too: a chip erase clears them and the `-m eeprom` write of 00 00 did not take.
 - Panel (branch `panel`): build with `-DMYADDRESS=N [-DFIRSTTIME]`. The deployed address-2 panel firmware is backed up in `firmware/panel/backups/`.
-**TODO (open items, 2026-11-09):**
-- [ ] **Board with `HC12 no reply AT`** (flashed 2026-11-09 via COM4; it fails in the address menu): the HC-12 does not answer the first AT.
-  - Measure in the ~3 s "setting HC-12..." window: pad1 VCC ~3.3 V? pad5 SET ~0 V? RXD/TXD alive? Check R9/R10/R11 and the Q2 joints.
-  - Or swap in a known-good module (fault moves with the module = bad module, else the board).
-  - Confirm it runs on batteries, not programmer V.
-- [ ] **Address menu (UP+DOWN 3 s)**: confirm on hardware that after setting an address, OK at that panel gives `HOLD: OK`.
-- [ ] **2 boards need compatible HC-12s.** The new batch is RF-incompatible with the panels' genuine modules.
+**TODO (open items, updated 2026-11-13):**
+- [x] ~~Board with `HC12 no reply AT`~~: the first-AT `ERROR`, fixed in af4e8f3 (see above). Verified on hardware 2026-11-13: address 10 then 2, `HC-12 OK at 2400`.
+- [x] ~~Address menu end-to-end~~: verified 2026-11-13 against the bench panel (address 2).
+- [ ] **Reflash the other remotes with af4e8f3** (the throwaway-AT fix), else their address menu can still fail.
+- [ ] **1 board needs a compatible HC-12** (gold metal crystal), or try 2x 22 pF on a new module's crystal pins and check with `hc12_sweep.py ... live`.
+- [ ] A loose UPDI wire hangs the remote's ATtiny (J5 goes silent, UPDI reset brings it back). So does soldering with the batteries in.
 - [ ] **Panel address 2**: make sure its original (old) HC-12 is back. It had a new module during the 2026-11-03 test. Backup firmware: `firmware/panel/backups/`.
 - [ ] **1 remote freezes after waking from sleep** (9 of 10 OK): catch it on the J5 log (CH340 on J5, 115200); the last line shows the step.
 - [ ] **Programmer COM3 (CP2102 serial 0001) is broken**: no TX->RX echo (resistor/diode/U lead or the adapter). Use the other CP2102 (COM4/COM9, numbered by USB port).
